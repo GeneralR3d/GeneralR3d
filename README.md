@@ -14,3 +14,9 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+- 🌱 I’m currently learning to build AI applications
+- 🤔 I’m looking for help with opportunities in startups
+- 💬 Ask me about ...
+- 📫 How to reach me: find me on (linkedin)[[www.linkedin.com/in/ding-ren-tuan]]
+- 😄 Pronouns: attack helicopter
+- ⚡ Fun fact: Love the outdoors!
