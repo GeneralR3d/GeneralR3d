@@ -1,4 +1,4 @@
-## personal website [here!](https://generalr3d.github.io/About-Me/)
+## Hi Im **Ding** Ren👋 
 
 <!--
 **GeneralR3d/GeneralR3d** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
@@ -14,9 +14,9 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
-- Hi 👋
+### Full-stack Engineer | CSE @ NTU
+- personal website [here](https://generalr3d.github.io/About-Me/)
+- reachable at @tdrdingren@gmail.com
 - 🌱 I’m currently learning to build AI applications
 - 🤔 I’m looking for help with opportunities in startups
 - 📫 How to reach me: find me on [linkedin](www.linkedin.com/in/ding-ren-tuan)
-- 😄 Pronouns: attack helicopter
-- ⚡ Fun fact: Love the outdoors!
