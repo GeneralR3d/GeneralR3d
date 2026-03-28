@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-Scans all public repos for GeneralR3d and auto-updates the
+Scans all repos (public + private) for GeneralR3d and auto-updates the
 <!-- TECH_STACK_START --> ... <!-- TECH_STACK_END --> section in README.md.
 
 Languages  : detected from repo primary language (sorted by repo count)
 Frameworks : detected by scanning package.json / go.mod / requirements.txt
              in each repo
 Infra      : left as static (always relevant, hard to auto-detect)
+
+Requires GH_TOKEN with 'repo' scope to access private repos.
 """
 
 import base64
@@ -52,15 +54,20 @@ LANGUAGE_BADGES = {
 FRAMEWORK_RULES = {
     # JS/TS — scanned from package.json
     "js": [
-        ('"react"',        "React",        "61DAFB", "react",        "black",  "frontend"),
-        ('"next"',         "Next.js",      "000000", "nextdotjs",    "white",  "frontend"),
-        ('"vue"',          "Vue.js",       "4FC08D", "vuedotjs",     "white",  "frontend"),
-        ('"svelte"',       "Svelte",       "FF3E00", "svelte",       "white",  "frontend"),
-        ('"tailwindcss"',  "Tailwind",     "06B6D4", "tailwindcss",  "white",  "frontend"),
-        ('"three"',        "Three.js",     "000000", "threedotjs",   "white",  "frontend"),
-        ('"express"',      "Express",      "000000", "express",      "white",  "backend"),
-        ('"fastify"',      "Fastify",      "000000", "fastify",      "white",  "backend"),
-        ('"socket.io"',    "Socket.io",    "010101", "socketdotio",  "white",  "backend"),
+        ('"react"',           "React",        "61DAFB", "react",        "black",  "frontend"),
+        ('"next"',            "Next.js",      "000000", "nextdotjs",    "white",  "frontend"),
+        ('"vue"',             "Vue.js",       "4FC08D", "vuedotjs",     "white",  "frontend"),
+        ('"svelte"',          "Svelte",       "FF3E00", "svelte",       "white",  "frontend"),
+        ('"tailwindcss"',     "Tailwind",     "06B6D4", "tailwindcss",  "white",  "frontend"),
+        ('"three"',           "Three.js",     "000000", "threedotjs",   "white",  "frontend"),
+        ('"@nestjs/core"',    "NestJS",       "E0234E", "nestjs",       "white",  "backend"),
+        ('"express"',         "Express",      "000000", "express",      "white",  "backend"),
+        ('"fastify"',         "Fastify",      "000000", "fastify",      "white",  "backend"),
+        ('"socket.io"',       "Socket.io",    "010101", "socketdotio",  "white",  "backend"),
+        ('"typeorm"',         "TypeORM",      "FE0803", "typeorm",      "white",  "backend"),
+        ('"prisma"',          "Prisma",       "2D3748", "prisma",       "white",  "backend"),
+        ('"@apollo/server"',  "Apollo",       "311C87", "apollographql","white",  "backend"),
+        ('"graphql"',         "GraphQL",      "E10098", "graphql",      "white",  "backend"),
     ],
     # Python — scanned from requirements.txt / pyproject.toml
     "py": [
@@ -107,12 +114,19 @@ def fetch_file(repo, path):
 
 
 def fetch_all_repos():
+    """
+    Use /user/repos (authenticated) to get public + private repos.
+    Falls back to /users/{username}/repos (public only) if no token.
+    """
     repos = []
     page = 1
+    base = (
+        "https://api.github.com/user/repos?affiliation=owner&per_page=100"
+        if TOKEN
+        else f"https://api.github.com/users/{USERNAME}/repos?per_page=100"
+    )
     while True:
-        batch = gh_get(
-            f"https://api.github.com/users/{USERNAME}/repos?per_page=100&page={page}"
-        )
+        batch = gh_get(f"{base}&page={page}")
         if not batch:
             break
         repos.extend(batch)
@@ -143,7 +157,7 @@ def detect_frameworks(repos):
         name = repo["name"]
         lang = repo.get("language") or ""
 
-        if lang in ("JavaScript", "TypeScript"):
+        if lang in ("JavaScript", "TypeScript", None):
             content = fetch_file(name, "package.json")
             if content:
                 for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["js"]:
