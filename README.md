@@ -58,7 +58,7 @@ Building with AI every day — from data science pipelines to full-stack web app
 
 <br/>
 
-<img src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=GeneralR3d&layout=compact&theme=github_dark&hide_border=true&border_radius=10&langs_count=8&title_color=58A6FF" width="100%"/>
+<img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=GeneralR3d&theme=github_dark" width="100%"/>
 
 </td>
 </tr>
