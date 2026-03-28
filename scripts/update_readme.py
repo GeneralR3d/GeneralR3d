@@ -135,51 +135,87 @@ def fetch_all_repos():
 
 # ── Detection logic ───────────────────────────────────────────────────────────
 
-def detect_languages(repos):
-    """Return languages sorted by number of repos where they are primary."""
+def detect_languages(repos, extra_langs=None):
+    """
+    Return languages sorted by number of repos where they are primary.
+    extra_langs: additional languages detected via manifest scanning (e.g. TypeScript
+    found in package.json devDependencies of a None-language repo).
+    """
     counts = {}
     for repo in repos:
         lang = repo.get("language")
         if lang and lang in LANGUAGE_BADGES:
             counts[lang] = counts.get(lang, 0) + 1
+    for lang in (extra_langs or []):
+        if lang in LANGUAGE_BADGES:
+            counts[lang] = counts.get(lang, 0) + 1
     return [lang for lang, _ in sorted(counts.items(), key=lambda x: -x[1])]
+
+
+# Subdirectory paths to probe when root-level manifest is missing (monorepos)
+_JS_PATHS  = ["package.json", "frontend/package.json", "client/package.json",
+               "app/package.json", "web/package.json", "server/package.json"]
+_PY_PATHS  = ["requirements.txt", "pyproject.toml", "setup.py",
+               "backend/requirements.txt", "backend/pyproject.toml",
+               "server/requirements.txt"]
+_GO_PATHS  = ["go.mod", "backend/go.mod", "server/go.mod"]
+
+
+def _scan_js(name, found, extra_langs):
+    for path in _JS_PATHS:
+        content = fetch_file(name, path)
+        if not content:
+            continue
+        # Detect TypeScript as a language if used in any package.json
+        if '"typescript"' in content and "TypeScript" not in extra_langs:
+            extra_langs.append("TypeScript")
+        for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["js"]:
+            if keyword in content:
+                found[category].add((label, color, logo, logo_color))
+
+
+def _scan_py(name, found):
+    for path in _PY_PATHS:
+        content = fetch_file(name, path)
+        if not content:
+            continue
+        for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["py"]:
+            if keyword.lower() in content.lower():
+                found[category].add((label, color, logo, logo_color))
+
+
+def _scan_go(name, found):
+    for path in _GO_PATHS:
+        content = fetch_file(name, path)
+        if not content:
+            continue
+        for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["go"]:
+            if keyword in content:
+                found[category].add((label, color, logo, logo_color))
 
 
 def detect_frameworks(repos):
     """
-    Scan manifest files in each repo and return a dict:
-      { "backend": set, "frontend": set, "data": set }
-    where each set contains (label, color, logo, logo_color) tuples.
+    Scan manifest files (root + common subdirs) in each repo.
+    Returns ({ "backend": set, "frontend": set, "data": set }, extra_langs).
     """
     found = {"backend": set(), "frontend": set(), "data": set()}
+    extra_langs = []
 
     for repo in repos:
         name = repo["name"]
         lang = repo.get("language") or ""
 
-        if lang in ("JavaScript", "TypeScript", None):
-            content = fetch_file(name, "package.json")
-            if content:
-                for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["js"]:
-                    if keyword in content:
-                        found[category].add((label, color, logo, logo_color))
+        # Always probe JS paths — catches monorepos where primary lang is None/Python/Go
+        _scan_js(name, found, extra_langs)
 
-        if lang == "Python":
-            for manifest in ("requirements.txt", "pyproject.toml", "setup.py"):
-                content = fetch_file(name, manifest)
-                if content:
-                    for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["py"]:
-                        if keyword.lower() in content.lower():
-                            found[category].add((label, color, logo, logo_color))
+        if lang == "Python" or not lang:
+            _scan_py(name, found)
 
-        if lang == "Go":
-            content = fetch_file(name, "go.mod")
-            if content:
-                for keyword, label, color, logo, logo_color, category in FRAMEWORK_RULES["go"]:
-                    if keyword in content:
-                        found[category].add((label, color, logo, logo_color))
+        if lang == "Go" or not lang:
+            _scan_go(name, found)
 
-    return found
+    return found, extra_langs
 
 # ── Badge rendering ───────────────────────────────────────────────────────────
 
@@ -244,10 +280,12 @@ def main():
     repos = fetch_all_repos()
     print(f"  Found {len(repos)} repos")
 
-    languages = detect_languages(repos)
+    frameworks, extra_langs = detect_frameworks(repos)
+    print(f"  Extra langs from manifests: {extra_langs}")
+
+    languages = detect_languages(repos, extra_langs)
     print(f"  Languages: {languages}")
 
-    frameworks = detect_frameworks(repos)
     print(f"  Frameworks: { {k: [x[0] for x in v] for k, v in frameworks.items()} }")
 
     section = render_section(languages, frameworks)
