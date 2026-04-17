@@ -18,7 +18,7 @@
 
 ### About Me
 
-**Full-Stack Engineer** studying **Computer Science & Engineering** at **Nanyang Technological University**
+**Full-Stack Engineer** studying **Computer Science & Engineering** at **Nanyang Technological University** Singapore
 
 Building with AI every day — from data science pipelines to full-stack web apps and backend systems
 
