@@ -29,7 +29,7 @@ export function Footer() {
           <GmailPill />
         </div>
         <p className="text-center text-sm text-[var(--fg-muted)]">
-          © 2026 Ding Ren. All rights reserved.
+          © 2026 Ding Ren Tuan. All rights reserved.
         </p>
       </div>
     </footer>

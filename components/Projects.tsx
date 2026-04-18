@@ -8,6 +8,7 @@ const categories: Category[] = projects.map((p, i) => ({
   id: p.name,
   title: p.name,
   subtitle: p.description,
+  image: p.image,
   featured: i === 0,
   icon: <ArrowRight className="w-8 h-8" />,
   onClick: () => p.link && window.open(p.link, "_blank", "noopener,noreferrer"),

@@ -17,9 +17,9 @@ export function ProjectCard({ project }: { project: Project }) {
           className="object-cover opacity-80 transition group-hover:opacity-100"
         />
       </div>
-      <div className="p-6">
+      <div className="p-6 pb-8">
         <h3 className="text-xl font-semibold text-(--fg)">{project.name}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-(--fg-muted)">
+        <p className="mt-2 text-sm leading-relaxed text-(--fg)/90">
           {project.description}
         </p>
       </div>

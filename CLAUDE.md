@@ -44,7 +44,7 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 ### Fonts
 
 - Inter (body) and VT323 (retro-terminal pixel accent) loaded via `next/font/google` in `app/layout.tsx`, exposed as `--font-inter` / `--font-vt323`, aliased in `@theme` to `--font-sans` / `--font-pixel`.
-- VT323 is brand-consistent with the GitHub profile README typing banner — don't swap it without reason. Use it for short accents (eyebrows, section labels, the Gmail pill email), not body copy.
+- VT323 is brand-consistent with the GitHub profile README typing banner — don't swap it without reason. Use it for short accents (eyebrows, section labels, nav links, the Gmail pill email), not body copy.
 
 ### Page composition
 
@@ -54,10 +54,10 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 
 `experiences`, `projects`, and `socialLinks` are the single source of truth for all content and external URLs.
 
-- `Experience` shape: `{ company, role, period, location, bullets: string[], tags: string[], gradient }`. `bullets` are rendered as a bulleted list; `tags` render as pill badges.
+- `Experience` shape: `{ company, role, period, location, bullets: string[], tags: string[], gradient }`. `gradient` is a Tailwind gradient fragment used as both a decorative line in the sticky panel and the `bg-gradient-to-br` overlay in `ExperienceCard`.
 - `Project` shape: `{ name, description, image, link }`. `image` is a local path under `public/images/`; `link` is an external URL (GitHub or live site).
-- `ExperienceCard.tsx` is a standalone card variant (compact, 3-bullet max) kept for potential reuse. The active Experience section does not use it — card markup is inlined in `Experience.tsx`.
-- `ProjectCard.tsx` is unused — the Projects section now renders via `CategoryList`.
+- `ExperienceCard.tsx` — compact card variant with a **mosaic pixel-reveal** click interaction (see below). Not used by the main Experience section, which has its own inlined layout.
+- `ProjectCard.tsx` is unused — the Projects section renders via `CategoryList`.
 
 ### Hero UX contract
 
@@ -75,47 +75,50 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 
 ### GmailPill UX contract
 
-`components/GmailPill.tsx` implements a specific interaction the user asked for: collapsed icon → click expands into a rounded pill showing the email in VT323 → clicking the email copies to clipboard with a "copied ✓" flash → click-outside **or** Esc collapses. If you refactor this, preserve all four behaviors.
+`components/GmailPill.tsx` implements a specific interaction: collapsed icon → click expands into a rounded pill showing the email in VT323 → clicking the email copies to clipboard with a "copied ✓" flash → click-outside **or** Esc collapses. Preserve all four behaviors if refactoring.
 
 ### Experience section UX contract
 
 `components/Experience.tsx` is a Client Component with a **scroll-linked sticky layout** on md+ screens:
 - **Left panel (sticky):** `TextRotate` animates company names character-by-character as the user scrolls. Role/location/period fade-swap via `AnimatePresence`. A pill progress bar shows the current index. The accent gradient line changes color per company.
-- **Right column (scrollable):** Each `ExperienceItem` is `min-h-[85vh]` so one entry is in focus at a time. `useInView` with `margin: "-40% 0px -40% 0px"` fires the in-view callback, which calls `textRotateRef.current?.jumpTo(index)` to sync the sticky panel. Items outside view are dimmed (`opacity-40`).
-- **Mobile fallback:** Plain stacked cards — no sticky panel, no TextRotate.
+- **Right column (scrollable):** Each `ExperienceItem` is `min-h-[85vh]` so one entry is in focus at a time. `useInView` with `margin: "-49% 0px -49% 0px"` fires the in-view callback, which calls `textRotateRef.current?.jumpTo(index)` to sync the sticky panel. Items outside view are dimmed (`opacity-40`). **Clicking an `ExperienceItem` triggers the mosaic reveal** (see below).
+- **Mobile fallback:** `MobileCard` components — same mosaic reveal, no sticky panel, no TextRotate.
 
 Do not add `auto` or `loop` to the `TextRotate` in this component — it is driven entirely by scroll position.
 
+### Mosaic pixel-reveal interaction
+
+Used in both `Experience.tsx` (`ExperienceItem`, `MobileCard`) and `ExperienceCard.tsx`. Clicking a card toggles a `revealed` boolean. When true, `AnimatePresence` mounts a `MosaicReveal` overlay (absolute inset-0, z-10) containing:
+1. An image layer (currently a `bg-blue-500` placeholder — swap for `<Image>` when assets are ready).
+2. A 14×10 grid of `motion.div` cells styled `bg-(--bg-elev)`, each with a random delay (up to 0.55s). They animate `opacity: 1 → 0` on mount (dissolving to reveal the image) and `opacity: 0 → 1` on exit (re-covering it). `initial/animate/exit` are all set so `AnimatePresence` handles both directions correctly.
+
+The `MosaicReveal` component is defined inline in `Experience.tsx`; `ExperienceCard.tsx` has its own equivalent inline. Cell delays are generated once via `useMemo` per component instance. The article must have `relative overflow-hidden` for the overlay to be clipped correctly.
+
 ### Projects section
 
-`components/Projects.tsx` is a Client Component. It maps `projects` from `lib/data.ts` into `Category[]` and renders them via `CategoryList`. The pixel-font `// Things I've built` heading sits above the list in the section wrapper — it is **not** passed as a prop to `CategoryList`.
+`components/Projects.tsx` maps `projects` from `lib/data.ts` into `Category[]` and renders them via `CategoryList`. The pixel-font `// Things I've built` heading is rendered in the section wrapper — **not** passed as a prop to `CategoryList`.
 
 ### UI primitives (`components/ui/`)
 
-`components/ui/` holds reusable, unstyled-logic components that wire together third-party libs:
+- `CategoryList` — hover-expanding list of items. Each `CategoryRow` is `relative overflow-hidden`; two image cards sit absolutely outside the container at `right: 100%` and `left: 100%`. On hover, the row detects which half the cursor is in and slides the row and the relevant image card together via `translateX`. Image card width is measured via `useLayoutEffect` + `ResizeObserver` (width = container height × 16/9). `Category` shape: `{ id, title, subtitle?, image?, icon?, onClick?, featured? }`. Pass `featured: true` on the first item for a larger title. The header block (title/subtitle/headerIcon) only renders when at least one of those props is provided — omit all three when the section heading is rendered outside the component.
+- `GooeyFilter` — renders a hidden SVG `<filter>` referenced via `style={{ filter: "url(#<id>)" }}`. Place it as a sibling of the element that uses it, not inside.
+- `PixelTrail` — `framer-motion` + `uuid` interactive grid that animates cells on mouse-move. Depends on `components/hooks/use-debounced-dimensions.ts` and `lib/utils.ts:cn`. Must be a Client Component; parent must also be a Client Component if passing reactive props.
+- `TextRotate` — animates between strings character-by-character. Exposes `TextRotateRef` with `{ next, previous, jumpTo, reset }`. Set `auto={false}` when driving from scroll. Imports from `framer-motion` (not `motion/react`) — that's the installed package.
+- `TextDisperse` — scatters characters to pre-set offsets/rotations when `dispersed={true}`. Fully externally controlled via the `dispersed` prop. The `transforms` array has 13 entries; characters wrap via `i % transforms.length`.
 
-- `CategoryList` — hover-expanding list of items. Each row grows from `h-24` → `h-32` on hover, shows corner bracket decorations, and reveals a `subtitle` and optional `icon`. Props: `categories` (required), `title`/`subtitle`/`headerIcon` (all optional — omit them when the section heading is rendered outside the component). The first item can be marked `featured` for a larger title size.
-- `GooeyFilter` — renders a hidden SVG `<filter>` that other elements reference via `style={{ filter: "url(#<id>)" }}`. Always place it as a sibling of the element that uses it, not inside.
-- `PixelTrail` — a `framer-motion` + `uuid` interactive grid that animates individual cells on mouse-move. Depends on `components/hooks/use-debounced-dimensions.ts` for container sizing and `lib/utils.ts` for `cn`. It must be a Client Component (`"use client"`); its parent section must also be a Client Component if it passes reactive props.
-- `TextRotate` — animates between an array of strings character-by-character using `framer-motion`. Exposes a `TextRotateRef` with `{ next, previous, jumpTo, reset }` for imperative control. Set `auto={false}` when driving it from scroll position. Imports from `framer-motion` (not `motion/react`) because that's the installed package.
-- `TextDisperse` — scatters individual characters to pre-set offsets/rotations on `dispersed={true}` and snaps them back on `false`. Accepts a `dispersed` prop for fully external control (no internal hover state). The `transforms` array has 13 entries; characters beyond that wrap via `i % transforms.length`.
+`hooks/use-screen-size.ts` returns a `ComparableScreenSize` with `.lessThan()` / `.greaterThan()` — use those instead of comparing the string value directly.
 
-`hooks/use-screen-size.ts` (top-level `hooks/`) returns a `ComparableScreenSize` instance with `.lessThan()` / `.greaterThan()` methods — use those instead of comparing the string value directly.
+`lib/utils.ts` exports a minimal `cn(...classes)` helper (no `clsx`/`tailwind-merge` dependency).
 
-`lib/utils.ts` exports a minimal `cn(...classes)` helper (no `clsx`/`tailwind-merge` dependency) — sufficient for conditional class merging in UI primitives.
+### Gotchas
 
-### `SectionHeading` gotcha
-
-`components/SectionHeading.tsx` exists but uses the deprecated v3 syntax (`font-[family-name:var(--font-pixel)]`, `text-[var(--accent)]`). Do not copy its patterns — use the v4 canonical forms (`font-pixel`, `text-(--accent)`) everywhere else.
-
-### Icon library gotcha
-
-`SiLinkedin` is **not** exported from `react-icons/si` (Simple Icons removed it over trademark concerns). Use `FaLinkedin` from `react-icons/fa6` — see `components/Footer.tsx`. `SiGithub`, `SiSubstack`, `SiGmail` are fine.
+- **`SectionHeading.tsx`** uses deprecated v3 syntax (`font-[family-name:var(--font-pixel)]`, `text-[var(--accent)]`). Do not copy its patterns — use v4 canonical forms everywhere else.
+- **`SiLinkedin`** is not exported from `react-icons/si` (trademark removal). Use `FaLinkedin` from `react-icons/fa6` instead. `SiGithub`, `SiSubstack`, `SiGmail` are fine.
 
 ## Architecture — README automation (`scripts/update_readme.py`)
 
 - Uses only Python stdlib (`urllib`, `base64`, `json`, `re`) — no `pip install` step in the workflow.
 - Authenticates against `/user/repos?affiliation=owner` when `GH_TOKEN` is set (includes private repos), falls back to `/users/GeneralR3d/repos` (public only) otherwise.
 - **Languages** come from each repo's primary-language field; **frameworks** come from scanning manifest files (`package.json`, `requirements.txt`/`pyproject.toml`/`setup.py`, `go.mod`) at the repo root plus a short allow-list of monorepo subdirs (`frontend/`, `backend/`, `client/`, `server/`, `app/`, `web/`). To support a new framework, add a row to the relevant list in `FRAMEWORK_RULES` — label, color hex, simple-icons slug, logo color, and one of the `backend` / `frontend` / `data` categories.
-- **Infra row** (Docker, GitHub Actions, Linux, Azure, Render, Supabase, Vercel) is static by design in `README.md` — the comment in the script calls this out ("always relevant, hard to auto-detect"). Do not move it inside the `TECH_STACK_START/END` markers.
-- The script replaces **only** the content between those markers via regex; everything else in `README.md` is hand-authored.
+- **Infra row** (Docker, GitHub Actions, Linux, Azure, Render, Supabase, Vercel) is static by design in `README.md`. Do not move it inside the `TECH_STACK_START/END` markers.
+- The script replaces **only** the content between those markers; everything else in `README.md` is hand-authored.
