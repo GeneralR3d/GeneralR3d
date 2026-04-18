@@ -16,7 +16,7 @@ function ExperienceItem({
   onInView: (index: number, inView: boolean) => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { margin: "-40% 0px -40% 0px" })
+  const isInView = useInView(ref, { margin: "-49% 0px -49% 0px" })
 
   useEffect(() => {
     onInView(index, isInView)
@@ -25,7 +25,7 @@ function ExperienceItem({
   return (
     <div ref={ref} className="flex min-h-[85vh] items-center py-10">
       <article
-        className={`w-full rounded-2xl border border-(--border) bg-(--bg-elev) p-7 transition-opacity duration-500 ${
+        className={`w-full rounded-2xl p-7 transition-opacity duration-500 ${
           isInView ? "opacity-100" : "opacity-40"
         }`}
       >
@@ -33,9 +33,6 @@ function ExperienceItem({
           <h3 className="text-lg font-semibold text-(--fg)">{exp.role}</h3>
           <span className="font-pixel text-sm text-(--fg-muted)">{exp.period}</span>
         </div>
-        <p className="mb-5 text-sm text-(--fg-muted)">
-          {exp.company} · {exp.location}
-        </p>
         <ul className="space-y-3">
           {exp.bullets.map((bullet, i) => (
             <li key={i} className="flex gap-3 text-sm leading-relaxed text-(--fg)/85">
@@ -48,7 +45,7 @@ function ExperienceItem({
           {exp.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-(--border) px-3 py-1 font-pixel text-xs text-(--fg-muted)"
+              className="rounded-full border border-(--border) px-3 py-1 font-pixel text-xs text-(--fg-muted) transition-colors duration-200 hover:border-(--accent) hover:text-(--accent)"
             >
               {tag}
             </span>
@@ -69,7 +66,7 @@ function StickyPanel({ currentIndex }: { currentIndex: number }) {
 
   return (
     <div className="flex h-full flex-col justify-center pr-12">
-      <span className="mb-6 font-pixel text-base tracking-widest text-(--accent)">
+      <span className="mb-6 font-pixel text-3xl tracking-widest text-(--accent)">
         // Where I&apos;ve worked
       </span>
 
@@ -87,7 +84,7 @@ function StickyPanel({ currentIndex }: { currentIndex: number }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -40 }}
           transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-          mainClassName="font-pixel text-4xl xl:text-5xl text-(--fg) leading-tight flex-wrap"
+          mainClassName="font-pixel text-6xl xl:text-7xl text-(--fg) leading-tight flex-wrap"
           splitLevelClassName="overflow-hidden"
         />
       </div>
@@ -101,34 +98,33 @@ function StickyPanel({ currentIndex }: { currentIndex: number }) {
           transition={{ duration: 0.3 }}
           className="mt-4 space-y-1"
         >
-          <p className="text-base font-medium text-(--fg)">{exp.role}</p>
-          <p className="text-sm text-(--fg-muted)">
-            {exp.location} · {exp.period}
-          </p>
+          <p className="text-base font-medium text-(--fg)">{exp.location}</p>
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-10 flex items-center gap-3">
-        {experiences.map((_, i) => (
-          <motion.span
-            key={i}
-            animate={{
-              width: i === currentIndex ? 24 : 6,
-              backgroundColor: i === currentIndex ? "var(--accent)" : "var(--border)",
-            }}
-            transition={{ duration: 0.3 }}
-            className="h-1.5 rounded-full"
-          />
-        ))}
-        <span className="ml-2 font-pixel text-sm text-(--fg-muted)">
-          {String(currentIndex + 1).padStart(2, "0")} / {String(experiences.length).padStart(2, "0")}
-        </span>
-      </div>
+      <div className="mt-10 w-full">
+        <div className="flex items-center gap-3">
+          {experiences.map((_, i) => (
+            <motion.span
+              key={i}
+              animate={{
+                width: i === currentIndex ? 40 : 10,
+                backgroundColor: i === currentIndex ? "var(--accent)" : "var(--border)",
+              }}
+              transition={{ duration: 0.3 }}
+              className="h-2.5 rounded-full"
+            />
+          ))}
+          <span className="ml-2 font-pixel text-sm text-(--fg-muted)">
+            {String(currentIndex + 1).padStart(2, "0")} / {String(experiences.length).padStart(2, "0")}
+          </span>
+        </div>
 
-      <div
-        aria-hidden
-        className={`pointer-events-none mt-10 h-px w-full bg-linear-to-r ${exp.gradient} opacity-60`}
-      />
+        <div
+          aria-hidden
+          className={`pointer-events-none mt-4 h-px w-full bg-linear-to-r ${exp.gradient} opacity-60`}
+        />
+      </div>
     </div>
   )
 }
@@ -141,7 +137,7 @@ export function Experience() {
   }, [])
 
   return (
-    <section id="experience" className="mx-auto max-w-7xl px-6 py-24">
+    <section id="experience" className="mx-auto max-w-6xl px-6 py-24">
       {/* Mobile heading */}
       <div className="md:hidden">
         <SectionHeading eyebrow="// Where I've worked" title="Experience" />

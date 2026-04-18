@@ -55,14 +55,23 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 `experiences`, `projects`, and `socialLinks` are the single source of truth for all content and external URLs.
 
 - `Experience` shape: `{ company, role, period, location, bullets: string[], tags: string[], gradient }`. `bullets` are rendered as a bulleted list; `tags` render as pill badges.
-- `Project` shape: `{ name, description, gradient }`. The `gradient` field is a Tailwind gradient fragment (`from-x via-y to-z`); replacing with real images means swapping to a `backgroundImage` prop and an `<Image>` per card — no structural change.
+- `Project` shape: `{ name, description, image, link }`. `image` is a local path under `public/images/`; `link` is an external URL (GitHub or live site).
 - `ExperienceCard.tsx` is a standalone card variant (compact, 3-bullet max) kept for potential reuse. The active Experience section does not use it — card markup is inlined in `Experience.tsx`.
+- `ProjectCard.tsx` is unused — the Projects section now renders via `CategoryList`.
 
 ### Hero UX contract
 
-`components/Hero.tsx` has two interactive modes controlled by whether the cursor is inside the text block (`contentRef` bounds):
-- **Outside text block** — `PixelTrail` runs normally (accent-colored pixels trail behind the cursor with a 500 ms fade delay).
-- **Inside text block** — the trail layer fades out (`opacity-0`) and a single grid-snapped pixel (same size/color/filter) highlights under the cursor with no trail. Both sit inside the same `GooeyFilter` wrapper so the gooey rounding is consistent. The content div is `pointer-events-none`; the section's `onMouseMove` drives all state.
+`components/Hero.tsx` is a scroll-driven scene. The `<section>` is `min-h-[200vh]`; inside it, a `sticky top-16` viewport div holds all visuals so the hero occupies 100vh of screen space while providing 100vh of scroll travel.
+
+**Scroll animations** — all driven by `useScroll({ target: sectionRef, offset: ["start start", "end end"] })`:
+- Entire text block translates top → bottom (`0vh` → `50vh`) over the full scroll range.
+- The name `"Ding Ren"` scales `1 → 2.2×` over the full range via a wrapping `motion.div`.
+- Eyebrow label slides up (`-40px`) and description slides down (`+40px`), both fading to opacity 0, over `[0, 0.35]` — clearing the stage before the name disperses.
+- `TextDisperse` on the name is active between `[0.4, 0.7]` scroll progress (driven by `useMotionValueEvent`, not hover).
+
+**Pixel trail** — disabled as soon as `window.scrollY > 0` (`hasScrolled` state). While at the top:
+- **Outside text block** — `PixelTrail` runs normally (accent pixels trail behind cursor, 500 ms fade delay).
+- **Inside text block** — trail layer fades out; a single grid-snapped accent pixel highlights under the cursor. Both share the same `GooeyFilter`. The content div is `pointer-events-none`; the sticky viewport's `onMouseMove` drives all state. Cursor pixel coordinates are computed relative to `viewportRef`, not `sectionRef`.
 
 ### GmailPill UX contract
 
@@ -77,17 +86,27 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 
 Do not add `auto` or `loop` to the `TextRotate` in this component — it is driven entirely by scroll position.
 
+### Projects section
+
+`components/Projects.tsx` is a Client Component. It maps `projects` from `lib/data.ts` into `Category[]` and renders them via `CategoryList`. The pixel-font `// Things I've built` heading sits above the list in the section wrapper — it is **not** passed as a prop to `CategoryList`.
+
 ### UI primitives (`components/ui/`)
 
 `components/ui/` holds reusable, unstyled-logic components that wire together third-party libs:
 
+- `CategoryList` — hover-expanding list of items. Each row grows from `h-24` → `h-32` on hover, shows corner bracket decorations, and reveals a `subtitle` and optional `icon`. Props: `categories` (required), `title`/`subtitle`/`headerIcon` (all optional — omit them when the section heading is rendered outside the component). The first item can be marked `featured` for a larger title size.
 - `GooeyFilter` — renders a hidden SVG `<filter>` that other elements reference via `style={{ filter: "url(#<id>)" }}`. Always place it as a sibling of the element that uses it, not inside.
 - `PixelTrail` — a `framer-motion` + `uuid` interactive grid that animates individual cells on mouse-move. Depends on `components/hooks/use-debounced-dimensions.ts` for container sizing and `lib/utils.ts` for `cn`. It must be a Client Component (`"use client"`); its parent section must also be a Client Component if it passes reactive props.
 - `TextRotate` — animates between an array of strings character-by-character using `framer-motion`. Exposes a `TextRotateRef` with `{ next, previous, jumpTo, reset }` for imperative control. Set `auto={false}` when driving it from scroll position. Imports from `framer-motion` (not `motion/react`) because that's the installed package.
+- `TextDisperse` — scatters individual characters to pre-set offsets/rotations on `dispersed={true}` and snaps them back on `false`. Accepts a `dispersed` prop for fully external control (no internal hover state). The `transforms` array has 13 entries; characters beyond that wrap via `i % transforms.length`.
 
 `hooks/use-screen-size.ts` (top-level `hooks/`) returns a `ComparableScreenSize` instance with `.lessThan()` / `.greaterThan()` methods — use those instead of comparing the string value directly.
 
 `lib/utils.ts` exports a minimal `cn(...classes)` helper (no `clsx`/`tailwind-merge` dependency) — sufficient for conditional class merging in UI primitives.
+
+### `SectionHeading` gotcha
+
+`components/SectionHeading.tsx` exists but uses the deprecated v3 syntax (`font-[family-name:var(--font-pixel)]`, `text-[var(--accent)]`). Do not copy its patterns — use the v4 canonical forms (`font-pixel`, `text-(--accent)`) everywhere else.
 
 ### Icon library gotcha
 

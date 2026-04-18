@@ -19,7 +19,7 @@ export function Navbar() {
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <a
           href="#home"
-          className="text-lg font-semibold tracking-tight text-[var(--fg)] hover:text-[var(--accent)] transition"
+          className="font-pixel text-2xl tracking-tight text-[var(--fg)] hover:text-[var(--accent)] transition"
         >
           Ding Ren
         </a>
@@ -30,7 +30,7 @@ export function Navbar() {
               key={item.label}
               href={item.href}
               aria-disabled={item.disabled || undefined}
-              className={`px-3 py-2 text-sm transition ${
+              className={`px-3 py-2 font-pixel text-xl transition ${
                 item.disabled
                   ? "cursor-not-allowed text-[var(--fg-muted)]/60"
                   : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
@@ -70,7 +70,7 @@ export function Navbar() {
                   if (item.disabled) e.preventDefault();
                   else setOpen(false);
                 }}
-                className={`py-2 text-sm ${
+                className={`py-2 font-pixel text-xl ${
                   item.disabled
                     ? "cursor-not-allowed text-[var(--fg-muted)]/60"
                     : "text-[var(--fg-muted)] hover:text-[var(--fg)]"

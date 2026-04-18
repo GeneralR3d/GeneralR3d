@@ -1,7 +1,7 @@
 export const socialLinks = {
-  github: "",
-  linkedin: "",
-  substack: "",
+  github: "https://github.com/GeneralR3d",
+  linkedin: "https://linkedin.com/in/ding-ren-tuan",
+  substack: "https://substack.com/@generalred",
   email: "tdrdingren@gmail.com",
 };
 
@@ -89,28 +89,33 @@ export const experiences: Experience[] = [
 export type Project = {
   name: string;
   description: string;
-  gradient: string;
+  image: string;
+  link: string;
 };
 
 export const projects: Project[] = [
   {
-    name: "Project One",
-    description: "Placeholder description. What it does and why it matters.",
-    gradient: "from-violet-500 via-indigo-500 to-blue-500",
+    name: "TechFin",
+    description: "A market intelligence platform transforming global news, social chatter, and portfolio context into actionable investing suggestions for users through knowledge graphs. 1st place at the 2026 NTU Fintech Innovators Hackathon!",
+    image: '/images/techfin.png',
+    link: "https://github.com/GeneralR3d/TechFin",
   },
   {
-    name: "Project Two",
-    description: "Placeholder description. What it does and why it matters.",
-    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
+    name: "Rachel",
+    description: "A chatbot that has its own personality, learns about every human it meets through conversations.",
+    image: '/images/rachel.jpeg',
+    link: "https://github.com/GeneralR3d/Rachel",
   },
   {
-    name: "Project Three",
-    description: "Placeholder description. What it does and why it matters.",
-    gradient: "from-pink-500 via-rose-500 to-red-500",
+    name: "3D Portfolio",
+    description: "Explore an immersive, California-inspired 3D landscape built with Three.js and Ammo.js. Navigate a physics-driven, Minecraft-style world to uncover my journey, projects, and technical skills—no scrolling required.",
+    image: '/images/3d-game.png',
+    link: "https://generalr3d.github.io/About-Me/",
   },
   {
-    name: "Project Four",
-    description: "Placeholder description. What it does and why it matters.",
-    gradient: "from-yellow-500 via-amber-500 to-orange-500",
+    name: "Sportify",
+    description: "Explore an immersive, California-inspired 3D landscape built with Three.js and Ammo.js. Navigate a physics-driven, Minecraft-style world to uncover my journey, projects, and technical skills—no scrolling required.",
+    image: '/images/sportify.png',
+    link: "https://github.com/GeneralR3d/Sportify",
   },
 ];
