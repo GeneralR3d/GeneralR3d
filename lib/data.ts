@@ -114,7 +114,7 @@ export const projects: Project[] = [
     name: "3D Portfolio",
     description: "Explore an immersive, California-inspired 3D landscape built with Three.js and Ammo.js. Navigate a physics-driven, Minecraft-style world to uncover my journey, projects, and technical skills—no scrolling required.",
     image: '/images/3d-game.png',
-    link: "https://generalr3d.github.io/About-Me/",
+    link: "https://generalr3d.github.io/About-Me-Game/",
   },
   {
     name: "Sportify",
