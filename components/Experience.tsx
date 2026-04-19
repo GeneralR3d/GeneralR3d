@@ -217,7 +217,7 @@ export function Experience() {
   }, [])
 
   return (
-    <section id="experience" className="mx-auto max-w-6xl px-6 py-24">
+    <section id="experience" className="mx-auto max-w-6xl px-6 pt-8 pb-24">
       {/* Mobile heading */}
       <div className="md:hidden">
         <SectionHeading eyebrow="// Where I've worked" title="Experience" />

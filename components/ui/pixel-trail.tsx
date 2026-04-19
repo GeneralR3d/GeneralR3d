@@ -112,15 +112,18 @@ const PixelDot: React.FC<PixelDotProps> = React.memo(
     )
 
     return (
-      <motion.div
-        id={id}
-        ref={ref}
-        className={cn("cursor-none", className)}
-        style={{ width: `${size}px`, height: `${size}px` }}
-        initial={{ opacity: 0 }}
-        animate={controls}
-        exit={{ opacity: 0 }}
-      />
+      <div
+        style={{ width: `${size}px`, height: `${size}px`, border: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}
+      >
+        <motion.div
+          id={id}
+          ref={ref}
+          className={cn("cursor-none w-full h-full", className)}
+          initial={{ opacity: 0 }}
+          animate={controls}
+          exit={{ opacity: 0 }}
+        />
+      </div>
     )
   }
 )

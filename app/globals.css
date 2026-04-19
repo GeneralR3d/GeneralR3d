@@ -39,6 +39,11 @@ html {
 
 body {
   background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, rgba(128,128,128,0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(128,128,128,0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-attachment: fixed;
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -47,4 +52,154 @@ body {
 ::selection {
   background: var(--accent);
   color: #fff;
+}
+
+/* Project 3D Cards */
+.project-card-parent {
+  padding: 20px;
+  perspective: 1000px;
+}
+
+.project-card {
+  border: 3px solid #1a1a1e;
+  transform-style: preserve-3d;
+  background:
+    linear-gradient(135deg, transparent 18.75%, rgba(255, 255, 255, 0.06) 0 31.25%, transparent 0),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) -6.25% 6.25%, #0d0d10 0 18.75%);
+  background-size: 60px 60px;
+  background-position: 0 0, 0 0;
+  background-color: #0d0d10;
+  position: relative;
+  width: 100%;
+  box-shadow: rgba(142, 142, 142, 0.3) 0px 30px 30px -10px;
+  transition: all 0.5s ease-in-out;
+}
+
+.project-card:hover {
+  background-position: -100px 100px, -100px 100px;
+  transform: rotate3d(0.5, 1, 0, 30deg);
+}
+
+.project-card-image {
+  position: relative;
+  transform-style: preserve-3d;
+  background-color: #efefef;
+  line-height: 0;
+  padding: 16px 16px 0 16px;
+}
+
+.dark .project-card-image {
+  background-color: #1a1a1e;
+}
+
+.project-card-image-inner {
+  transform: translate3d(0px, 0px, 0px);
+  transition: transform 0.5s ease-in-out;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.project-card-image:hover .project-card-image-inner {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.project-card-content {
+  background: #efefef;
+  transition: all 0.5s ease-in-out;
+  padding: 15px 25px 30px 25px;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.dark .project-card-content {
+  background: #1a1a1e;
+}
+
+.project-card-title {
+  display: block;
+  color: #0a0a0b;
+  font-size: 30px;
+  font-weight: 900;
+  font-family: var(--font-sans);
+  transition: all 0.5s ease-in-out;
+}
+
+.dark .project-card-title {
+  color: #ededed;
+}
+
+.project-card-title:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.project-card-description {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.8;
+  color: #0a0a0b;
+  transition: all 0.5s ease-in-out;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dark .project-card-description {
+  color: #ededed;
+}
+
+.project-card-description:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.project-card-see-more {
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: #0d0d10;
+  padding: 0.5rem 0.7rem;
+  text-decoration: none;
+  transition: all 0.5s ease-in-out;
+}
+
+.project-card-see-more:hover {
+  transform: translate3d(0px, 0px, 60px);
+}
+
+.project-card-date {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  height: 60px;
+  width: 60px;
+  background: #0d0d10;
+  border: 1px solid var(--accent);
+  transform: translate3d(0px, 0px, 80px);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 17px 10px -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card-month {
+  display: block;
+  text-align: center;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.project-card-date-num {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
 }

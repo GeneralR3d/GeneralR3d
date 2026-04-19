@@ -1,11 +1,10 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { useScreenSize } from "@/hooks/use-screen-size"
 import { PixelTrail } from "@/components/ui/pixel-trail"
 import { GooeyFilter } from "@/components/ui/gooey-filter"
-import { TextDisperse } from "@/components/ui/text-disperse"
 
 export function Hero() {
   const screenSize = useScreenSize()
@@ -15,7 +14,6 @@ export function Hero() {
   const [overText, setOverText] = useState(false)
   const [cursorPixel, setCursorPixel] = useState<{ x: number; y: number } | null>(null)
   const [hasScrolled, setHasScrolled] = useState(false)
-  const [nameDispersed, setNameDispersed] = useState(false)
 
   const pixelSize = screenSize.lessThan("md") ? 24 : 32
 
@@ -24,24 +22,17 @@ export function Hero() {
     offset: ["start start", "end end"],
   })
 
-  // Entire text block drifts from near-top to near-bottom
-  const y = useTransform(scrollYProgress, [0, 1], ["0vh", "50vh"])
+  // Phase 1 [0→0.5]: text block drifts to vertical center, then holds
+  const y = useTransform(scrollYProgress, [0, 0.5, 1], ["0vh", "30vh", "30vh"])
 
-  // Only the name grows
-  const nameScale = useTransform(scrollYProgress, [0, 1], [1, 2.2])
+  // Phase 2 [0.5→1]: name expands once centered
+  const nameScale = useTransform(scrollYProgress, [0.5, 1], [1, 2.2])
 
-  // Eyebrow slides up and fades out as name starts growing
-  const eyebrowY = useTransform(scrollYProgress, [0, 0.35], ["0px", "-40px"])
-  const eyebrowOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0])
-
-  // Description slides down and fades out at the same time
-  const descY = useTransform(scrollYProgress, [0, 0.35], ["0px", "40px"])
-  const descOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0])
-
-  // Disperse the name between 40% and 70% scroll progress
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    setNameDispersed(v >= 0.4 && v <= 0.7)
-  })
+  // Eyebrow and description fade out at the start of phase 2
+  const eyebrowY = useTransform(scrollYProgress, [0.5, 0.75], ["0px", "-40px"])
+  const eyebrowOpacity = useTransform(scrollYProgress, [0.5, 0.75], [1, 0])
+  const descY = useTransform(scrollYProgress, [0.5, 0.75], ["0px", "40px"])
+  const descOpacity = useTransform(scrollYProgress, [0.5, 0.75], [1, 0])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,7 +71,7 @@ export function Hero() {
   const drawingActive = !hasScrolled
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-[200vh]">
+    <section ref={sectionRef} id="home" className="relative min-h-[140vh]">
       {/* Sticky viewport — sticks below the navbar for the full scroll journey */}
       <div
         ref={viewportRef}
@@ -90,7 +81,7 @@ export function Hero() {
       >
         <GooeyFilter id="gooey-hero-trail" strength={5} />
 
-        {/* Pixel trail layer */}
+
         <div
           className="absolute inset-0 z-0"
           style={{ filter: "url(#gooey-hero-trail)" }}
@@ -138,12 +129,9 @@ export function Hero() {
             style={{ scale: nameScale }}
             className="mt-6 origin-center"
           >
-            <TextDisperse
-              dispersed={nameDispersed}
-              className="text-6xl font-semibold tracking-tight text-(--fg) md:text-8xl"
-            >
+            <h1 className="text-6xl font-semibold tracking-tight text-(--fg) md:text-8xl">
               Ding Ren
-            </TextDisperse>
+            </h1>
           </motion.div>
 
           <motion.p
