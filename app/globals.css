@@ -89,7 +89,7 @@ body {
 }
 
 .dark .project-card-image {
-  background-color: #1a1a1e;
+  background-color: #0e0e10;
 }
 
 .project-card-image-inner {
@@ -115,7 +115,7 @@ body {
 }
 
 .dark .project-card-content {
-  background: #1a1a1e;
+  background: #0e0e10;
 }
 
 .project-card-title {
@@ -163,10 +163,14 @@ body {
   font-size: 12px;
   text-transform: uppercase;
   color: var(--accent);
-  background: #0d0d10;
+  background: #e0e0e0;
   padding: 0.5rem 0.7rem;
   text-decoration: none;
   transition: all 0.5s ease-in-out;
+}
+
+.dark .project-card-see-more {
+  background: #0d0d10;
 }
 
 .project-card-see-more:hover {
@@ -179,13 +183,17 @@ body {
   right: 30px;
   height: 60px;
   width: 60px;
-  background: #0d0d10;
+  background: #e0e0e0;
   border: 1px solid var(--accent);
   transform: translate3d(0px, 0px, 80px);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 17px 10px -10px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.dark .project-card-date {
+  background: #0d0d10;
 }
 
 .project-card-month {

@@ -54,10 +54,10 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 
 `experiences`, `projects`, and `socialLinks` are the single source of truth for all content and external URLs.
 
-- `Experience` shape: `{ company, role, period, location, bullets: string[], tags: string[], gradient }`. `gradient` is a Tailwind gradient fragment used as both a decorative line in the sticky panel and the `bg-gradient-to-br` overlay in `ExperienceCard`.
+- `Experience` shape: `{ company, role, period, location, bullets: string[], tags: string[], gradient, image? }`. `gradient` is a Tailwind gradient fragment used as both a decorative line in the sticky panel and the `bg-gradient-to-br` overlay in `ExperienceCard`. `image` is an optional local path under `public/images/`; when present, it renders above the card content.
 - `Project` shape: `{ name, description, image, link }`. `image` is a local path under `public/images/`; `link` is an external URL (GitHub or live site).
-- `ExperienceCard.tsx` — compact card variant with a **mosaic pixel-reveal** click interaction (see below). Not used by the main Experience section, which has its own inlined layout.
-- `ProjectCard.tsx` is unused — the Projects section renders via `CategoryList`.
+- `ExperienceCard.tsx` — compact card variant with a mosaic pixel-reveal click interaction. Not used by the main Experience section, which has its own inlined layout.
+- `ProjectCard.tsx` and `components/ui/vertical-tabs.tsx` are unused.
 
 ### Hero UX contract
 
@@ -81,22 +81,14 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 
 `components/Experience.tsx` is a Client Component with a **scroll-linked sticky layout** on md+ screens:
 - **Left panel (sticky):** `TextRotate` animates company names character-by-character as the user scrolls. Role/location/period fade-swap via `AnimatePresence`. A pill progress bar shows the current index. The accent gradient line changes color per company.
-- **Right column (scrollable):** Each `ExperienceItem` is `min-h-[85vh]` so one entry is in focus at a time. `useInView` with `margin: "-49% 0px -49% 0px"` fires the in-view callback, which calls `textRotateRef.current?.jumpTo(index)` to sync the sticky panel. Items outside view are dimmed (`opacity-40`). **Clicking an `ExperienceItem` triggers the mosaic reveal** (see below).
-- **Mobile fallback:** `MobileCard` components — same mosaic reveal, no sticky panel, no TextRotate.
+- **Right column (scrollable):** Each `ExperienceItem` is `h-[85vh]` — a fixed-height container so one entry is in focus at a time. Inside, a `flex-col justify-center` wrapper stacks an optional image (`flex-1 object-contain`, only when `exp.image` is set) above the article (`shrink-0`). `useInView` with `margin: "-49% 0px -49% 0px"` fires the in-view callback, which calls `textRotateRef.current?.jumpTo(index)` to sync the sticky panel. Items outside view are dimmed (`opacity-40`). Cards have sharp corners (no `rounded`).
+- **Mobile fallback:** `MobileCard` components — same image-on-top layout, no sticky panel, no TextRotate.
 
 Do not add `auto` or `loop` to the `TextRotate` in this component — it is driven entirely by scroll position.
 
-### Mosaic pixel-reveal interaction
-
-Used in both `Experience.tsx` (`ExperienceItem`, `MobileCard`) and `ExperienceCard.tsx`. Clicking a card toggles a `revealed` boolean. When true, `AnimatePresence` mounts a `MosaicReveal` overlay (absolute inset-0, z-10) containing:
-1. An image layer (currently a `bg-blue-500` placeholder — swap for `<Image>` when assets are ready).
-2. A 14×10 grid of `motion.div` cells styled `bg-(--bg-elev)`, each with a random delay (up to 0.55s). They animate `opacity: 1 → 0` on mount (dissolving to reveal the image) and `opacity: 0 → 1` on exit (re-covering it). `initial/animate/exit` are all set so `AnimatePresence` handles both directions correctly.
-
-The `MosaicReveal` component is defined inline in `Experience.tsx`; `ExperienceCard.tsx` has its own equivalent inline. Cell delays are generated once via `useMemo` per component instance. The article must have `relative overflow-hidden` for the overlay to be clipped correctly.
-
 ### Projects section
 
-`components/Projects.tsx` maps `projects` from `lib/data.ts` into `Category[]` and renders them via `CategoryList`. The pixel-font `// Things I've built` heading is rendered in the section wrapper — **not** passed as a prop to `CategoryList`.
+`components/Projects.tsx` renders a **CSS masonry grid** (`columns-1 sm:columns-2`, `break-inside-avoid`) of custom 3D cards sourced directly from `projects` in `lib/data.ts`. All card styles live in `app/globals.css` under the `/* Project 3D Cards */` block (`.project-card`, `.project-card-image`, `.project-card-content`, etc.) — **not** in Tailwind utilities or a separate component file. Cards have light/dark mode variants via `.dark .project-card-*` overrides in the same block. Images use `width={0} height={0} sizes="..." style={{ width:'100%', height:'auto' }}` so each card height varies naturally with its image's aspect ratio.
 
 ### UI primitives (`components/ui/`)
 

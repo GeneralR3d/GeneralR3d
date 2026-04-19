@@ -1,44 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import Image from "next/image"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useInView } from "framer-motion"
 import { experiences, type Experience } from "@/lib/data"
 import { SectionHeading } from "./SectionHeading"
 import { TextRotate, type TextRotateRef } from "./ui/text-rotate"
-
-const COLS = 14
-const ROWS = 10
-
-function MosaicReveal({ bgClass }: { bgClass: string }) {
-  const cellDelays = useMemo(
-    () => Array.from({ length: COLS * ROWS }, () => Math.random() * 0.55),
-    []
-  )
-  return (
-    <div className="absolute inset-0 z-10">
-      <div className={`absolute inset-0 ${bgClass}`} />
-      <div
-        className="absolute inset-0"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-          gridTemplateRows: `repeat(${ROWS}, 1fr)`,
-        }}
-      >
-        {cellDelays.map((delay, i) => (
-          <motion.div
-            key={i}
-            className="bg-(--bg-elev)"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            exit={{ opacity: 1 }}
-            transition={{ duration: 0.15, delay, ease: "easeInOut" }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
 
 function ExperienceItem({
   exp,
@@ -51,25 +18,82 @@ function ExperienceItem({
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { margin: "-49% 0px -49% 0px" })
-  const [revealed, setRevealed] = useState(false)
 
   useEffect(() => {
     onInView(index, isInView)
   }, [isInView, index, onInView])
 
   return (
-    <div ref={ref} className="flex min-h-[85vh] items-center py-10">
-      <article
-        className={`relative w-full cursor-pointer select-none overflow-hidden rounded-2xl p-7 transition-opacity duration-500 ${
+    <div ref={ref} className="flex h-[85vh] py-4">
+      <div
+        className={`flex w-full flex-col justify-center overflow-hidden transition-opacity duration-500 ${
           isInView ? "opacity-100" : "opacity-40"
         }`}
-        onClick={() => setRevealed((v) => !v)}
       >
-        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-lg font-semibold text-(--fg)">{exp.role}</h3>
+        {exp.image && (
+          <div className="relative min-h-0 flex-1 overflow-hidden">
+            <Image
+              src={exp.image}
+              alt={exp.company}
+              fill
+              sizes="50vw"
+              className="object-contain"
+            />
+          </div>
+        )}
+        <article className="relative w-full shrink-0 select-none p-7">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+            <h3 className="text-lg font-semibold text-(--fg)">{exp.role}</h3>
+            <span className="font-pixel text-sm text-(--fg-muted)">{exp.period}</span>
+          </div>
+          <ul className="space-y-3">
+            {exp.bullets.map((bullet, i) => (
+              <li key={i} className="flex gap-3 text-sm leading-relaxed text-(--fg)/85">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-(--accent)" />
+                {bullet}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {exp.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-(--border) px-3 py-1 font-pixel text-xs text-(--fg-muted) transition-colors duration-200 hover:border-(--accent) hover:text-(--accent)"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </article>
+      </div>
+    </div>
+  )
+}
+
+function MobileCard({ exp }: { exp: Experience }) {
+  return (
+    <div className="border border-(--border) bg-(--bg-elev)">
+      {exp.image && (
+        <div className="relative w-full overflow-hidden">
+          <Image
+            src={exp.image}
+            alt={exp.company}
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: "100%", height: "auto" }}
+          />
+        </div>
+      )}
+      <article className="p-6">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="font-pixel text-xl text-(--fg)">{exp.company}</h3>
           <span className="font-pixel text-sm text-(--fg-muted)">{exp.period}</span>
         </div>
-        <ul className="space-y-3">
+        <p className="mb-4 text-sm text-(--fg-muted)">
+          {exp.role} · {exp.location}
+        </p>
+        <ul className="space-y-2">
           {exp.bullets.map((bullet, i) => (
             <li key={i} className="flex gap-3 text-sm leading-relaxed text-(--fg)/85">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-(--accent)" />
@@ -77,62 +101,18 @@ function ExperienceItem({
             </li>
           ))}
         </ul>
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
           {exp.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-(--border) px-3 py-1 font-pixel text-xs text-(--fg-muted) transition-colors duration-200 hover:border-(--accent) hover:text-(--accent)"
+              className="rounded-full border border-(--border) px-3 py-1 font-pixel text-xs text-(--fg-muted)"
             >
               {tag}
             </span>
           ))}
         </div>
-
-        <AnimatePresence>
-          {revealed && <MosaicReveal bgClass="bg-blue-500" />}
-        </AnimatePresence>
       </article>
     </div>
-  )
-}
-
-function MobileCard({ exp }: { exp: Experience }) {
-  const [revealed, setRevealed] = useState(false)
-  return (
-    <article
-      className="relative cursor-pointer select-none overflow-hidden rounded-2xl border border-(--border) bg-(--bg-elev) p-6"
-      onClick={() => setRevealed((v) => !v)}
-    >
-      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="font-pixel text-xl text-(--fg)">{exp.company}</h3>
-        <span className="font-pixel text-sm text-(--fg-muted)">{exp.period}</span>
-      </div>
-      <p className="mb-4 text-sm text-(--fg-muted)">
-        {exp.role} · {exp.location}
-      </p>
-      <ul className="space-y-2">
-        {exp.bullets.map((bullet, i) => (
-          <li key={i} className="flex gap-3 text-sm leading-relaxed text-(--fg)/85">
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-(--accent)" />
-            {bullet}
-          </li>
-        ))}
-      </ul>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {exp.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full border border-(--border) px-3 py-1 font-pixel text-xs text-(--fg-muted)"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      <AnimatePresence>
-        {revealed && <MosaicReveal bgClass="bg-blue-500" />}
-      </AnimatePresence>
-    </article>
   )
 }
 

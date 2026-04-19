@@ -71,7 +71,7 @@ export function Hero() {
   const drawingActive = !hasScrolled
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-[140vh]">
+    <section ref={sectionRef} id="home" className="relative min-h-[180vh]">
       {/* Sticky viewport — sticks below the navbar for the full scroll journey */}
       <div
         ref={viewportRef}
@@ -136,11 +136,10 @@ export function Hero() {
 
           <motion.p
             style={{ y: descY, opacity: descOpacity }}
-            className="mt-6 max-w-sm text-sm leading-relaxed text-(--fg-muted)"
+            className="mt-6 max-w-sm text-base leading-relaxed text-(--fg)"
           >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco.
+Software and AI engineer who builds products from zero to one — with the speed and ownership of a founder.
+With experience across a SF Bay Area venture studio, a national healthcare tech firm, and an Indonesian fintech unicorn, he has shipped production-grade full-stack and LLM-powered products across industries. He thinks in outcomes, moves fast, and owns the entire stack — from Figma wireframes to cloud deployment. Currently a final year student at NTU Singapore.
           </motion.p>
         </motion.div>
       </div>

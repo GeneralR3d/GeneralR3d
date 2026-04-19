@@ -13,6 +13,7 @@ export type Experience = {
   bullets: string[];
   tags: string[];
   gradient: string;
+  image?: string;
 };
 
 export const experiences: Experience[] = [
@@ -30,6 +31,7 @@ export const experiences: Experience[] = [
     ],
     tags: ["React", "TypeScript", "Vite", "NestJS", "PostgreSQL", "Prisma", "Nginx", "AWS"],
     gradient: "from-sky-500 via-blue-600 to-indigo-500",
+    image: '/images/sky9.jpeg',
   },
   {
     company: "Synapxe",
@@ -44,6 +46,7 @@ export const experiences: Experience[] = [
     ],
     tags: ["LangGraph", "LangChain", "RAG", "DuckDB", "RAGAS", "Python", "LLMs"],
     gradient: "from-teal-500 via-emerald-500 to-green-600",
+    image: '/images/synapxe.jpg',
   },
   {
     company: "P.T. Superbank",
@@ -58,6 +61,7 @@ export const experiences: Experience[] = [
     ],
     tags: ["AWS Bedrock", "RAG", "Python", "Golang", "Kubernetes", "CI/CD"],
     gradient: "from-amber-500 via-orange-500 to-red-500",
+    image: '/images/superbank.png',
   },
   {
     company: "NTU",
