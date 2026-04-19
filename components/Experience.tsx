@@ -33,7 +33,7 @@ function ExperienceItem({
         {exp.image && (
           <div className="relative min-h-0 flex-1 overflow-hidden">
             <Image
-              src={exp.image}
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${exp.image}`}
               alt={exp.company}
               fill
               sizes="50vw"
@@ -76,7 +76,7 @@ function MobileCard({ exp }: { exp: Experience }) {
       {exp.image && (
         <div className="relative w-full overflow-hidden">
           <Image
-            src={exp.image}
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${exp.image}`}
             alt={exp.company}
             width={0}
             height={0}

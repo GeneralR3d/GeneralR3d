@@ -18,7 +18,7 @@ export function Projects() {
               <div className="project-card-image">
                 <div className="project-card-image-inner">
                   <Image
-                    src={project.image}
+                    src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${project.image}`}
                     alt={project.name}
                     width={0}
                     height={0}
