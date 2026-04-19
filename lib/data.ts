@@ -31,7 +31,7 @@ export const experiences: Experience[] = [
     ],
     tags: ["React", "TypeScript", "Vite", "NestJS", "PostgreSQL", "Prisma", "Nginx", "AWS"],
     gradient: "from-sky-500 via-blue-600 to-indigo-500",
-    image: '/images/sky9.jpeg',
+    image: 'public/images/sky9.jpeg',
   },
   {
     company: "Synapxe",
@@ -46,7 +46,7 @@ export const experiences: Experience[] = [
     ],
     tags: ["LangGraph", "LangChain", "RAG", "DuckDB", "RAGAS", "Python", "LLMs"],
     gradient: "from-teal-500 via-emerald-500 to-green-600",
-    image: '/images/synapxe.jpg',
+    image: 'public/images/synapxe.jpg',
   },
   {
     company: "P.T. Superbank",
@@ -61,7 +61,7 @@ export const experiences: Experience[] = [
     ],
     tags: ["AWS Bedrock", "RAG", "Python", "Golang", "Kubernetes", "CI/CD"],
     gradient: "from-amber-500 via-orange-500 to-red-500",
-    image: '/images/superbank.png',
+    image: 'public/images/superbank.png',
   },
   {
     company: "NTU",
@@ -101,25 +101,25 @@ export const projects: Project[] = [
   {
     name: "TechFin",
     description: "A market intelligence platform transforming global news, social chatter, and portfolio context into actionable investing suggestions for users through knowledge graphs. 1st place at the 2026 NTU Fintech Innovators Hackathon!",
-    image: '/images/techfin.png',
+    image: 'public/images/techfin.png',
     link: "https://github.com/GeneralR3d/TechFin",
   },
   {
     name: "Rachel",
     description: "A chatbot that has its own personality, learns about every human it meets through conversations.",
-    image: '/images/rachel.jpeg',
+    image: 'public/images/rachel.jpeg',
     link: "https://github.com/GeneralR3d/Rachel",
   },
   {
     name: "3D Portfolio",
     description: "Explore an immersive, California-inspired 3D landscape built with Three.js and Ammo.js. Navigate a physics-driven, Minecraft-style world to uncover my journey, projects, and technical skills—no scrolling required.",
-    image: '/images/3d-game.png',
+    image: 'public/images/3d-game.png',
     link: "https://generalr3d.github.io/About-Me/",
   },
   {
     name: "Sportify",
     description: "Explore an immersive, California-inspired 3D landscape built with Three.js and Ammo.js. Navigate a physics-driven, Minecraft-style world to uncover my journey, projects, and technical skills—no scrolling required.",
-    image: '/images/sportify.png',
+    image: 'public/images/sportify.png',
     link: "https://github.com/GeneralR3d/Sportify",
   },
 ];
