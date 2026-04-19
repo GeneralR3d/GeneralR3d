@@ -118,8 +118,8 @@ export const projects: Project[] = [
   },
   {
     name: "Sportify",
-    description: "Explore an immersive, California-inspired 3D landscape built with Three.js and Ammo.js. Navigate a physics-driven, Minecraft-style world to uncover my journey, projects, and technical skills—no scrolling required.",
-    image: '/images/sportify.png',
+    description: "Weather-aware sports venue recommender for Singapore. Ranks ~1,000 facilities in real time by combining live PSI, UV, rainfall, and temperature data with proximity scoring and transport mode filters. 
+ image: '/images/sportify.png',
     link: "https://github.com/GeneralR3d/Sportify",
   },
 ];
