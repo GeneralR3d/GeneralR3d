@@ -118,8 +118,8 @@ export const projects: Project[] = [
   },
   {
     name: "Sportify",
-    description: "Weather-aware sports venue recommender for Singapore. Ranks ~1,000 facilities in real time by combining live PSI, UV, rainfall, and temperature data with proximity scoring and transport mode filters. 
-, image: '/images/sportify.png',
+    description: "Weather-aware sports venue recommender for Singapore. Ranks ~1,000 facilities in real time by combining live PSI, UV, rainfall, and temperature data with proximity scoring and transport mode filters.",
+    image: '/images/sportify.png',
     link: "https://github.com/GeneralR3d/Sportify",
   },
 ];
