@@ -122,4 +122,10 @@ export const projects: Project[] = [
     image: '/images/sportify.png',
     link: "https://github.com/GeneralR3d/Sportify",
   },
+  {
+    name: "Vista Planner",
+    description: "Interactive Singapore retirement planner — models CPF (OA/SA/MA/RA), SRS tax optimization, and personal brokerage together in a single year-by-year simulation from today to death age.",
+    image: '/images/retirement_planner.png',
+    link: "https://retirement-dashboard-chi.vercel.app",
+  },
 ];
