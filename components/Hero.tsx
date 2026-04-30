@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
 import { useScreenSize } from "@/hooks/use-screen-size"
 import { PixelTrail } from "@/components/ui/pixel-trail"
 import { GooeyFilter } from "@/components/ui/gooey-filter"
@@ -16,23 +15,6 @@ export function Hero() {
   const [hasScrolled, setHasScrolled] = useState(false)
 
   const pixelSize = screenSize.lessThan("md") ? 24 : 32
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  })
-
-  // Phase 1 [0→0.5]: text block drifts to vertical center, then holds
-  const y = useTransform(scrollYProgress, [0, 0.5, 1], ["0vh", "30vh", "30vh"])
-
-  // Phase 2 [0.5→1]: name expands once centered
-  const nameScale = useTransform(scrollYProgress, [0.5, 1], [1, 2.2])
-
-  // Eyebrow and description fade out at the start of phase 2
-  const eyebrowY = useTransform(scrollYProgress, [0.5, 0.75], ["0px", "-40px"])
-  const eyebrowOpacity = useTransform(scrollYProgress, [0.5, 0.75], [1, 0])
-  const descY = useTransform(scrollYProgress, [0.5, 0.75], ["0px", "40px"])
-  const descOpacity = useTransform(scrollYProgress, [0.5, 0.75], [1, 0])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,7 +53,7 @@ export function Hero() {
   const drawingActive = !hasScrolled
 
   return (
-    <section ref={sectionRef} id="home" className="relative min-h-[180vh]">
+    <section ref={sectionRef} id="home" className="relative min-h-screen">
       {/* Sticky viewport — sticks below the navbar for the full scroll journey */}
       <div
         ref={viewportRef}
@@ -111,37 +93,25 @@ export function Hero() {
           )}
         </div>
 
-        {/* Text block — translates top → bottom as user scrolls */}
-        <motion.div
+        <div
           ref={contentRef}
-          style={{ y }}
           className="pointer-events-none relative z-10 flex w-full max-w-3xl flex-col items-center px-6 pt-8 text-center"
         >
-          <motion.p
-            style={{ y: eyebrowY, opacity: eyebrowOpacity }}
-            className="font-pixel text-xl tracking-widest text-(--accent) md:text-2xl"
-          >
+          <p className="font-pixel text-xl tracking-widest text-(--accent) md:text-2xl">
             &gt; full_stack_software_engineer
-          </motion.p>
+          </p>
 
-          {/* Name grows independently */}
-          <motion.div
-            style={{ scale: nameScale }}
-            className="mt-6 origin-center"
-          >
+          <div className="mt-6">
             <h1 className="text-6xl font-semibold tracking-tight text-(--fg) md:text-8xl">
               Ding Ren
             </h1>
-          </motion.div>
+          </div>
 
-          <motion.p
-            style={{ y: descY, opacity: descOpacity }}
-            className="mt-6 max-w-sm text-base leading-relaxed text-(--fg)"
-          >
+          <p className="mt-6 max-w-sm text-base leading-relaxed text-(--fg)">
 Software and AI engineer who builds products from zero to one — with the speed and ownership of a founder.
 With experience across a SF Bay Area venture studio, a national healthcare tech firm, and an Indonesian fintech unicorn, he has shipped production-grade full-stack and LLM-powered products across industries. He thinks in outcomes, moves fast, and owns the entire stack — from Figma wireframes to cloud deployment. Currently a final year student at NTU Singapore.
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
       </div>
     </section>
   )
