@@ -5,6 +5,7 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-pixel: var(--font-vt323), ui-monospace, monospace;
+  --font-serif: var(--font-lora), ui-serif, Georgia, serif;
 
   --color-bg: #0a0a0b;
   --color-bg-elev: #111114;

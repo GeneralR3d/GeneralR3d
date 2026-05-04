@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, VT323 } from "next/font/google";
+import { Inter, VT323, Lora } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -17,6 +17,12 @@ const vt323 = VT323({
   display: "swap",
 });
 
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-lora",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Ding Ren — Full-Stack Engineer",
   description:
@@ -29,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${vt323.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${vt323.variable} ${lora.variable}`}>
       <head>
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-0T4XLW61J9" strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">{`

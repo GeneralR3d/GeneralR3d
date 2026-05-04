@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Two unrelated workstreams sharing one repo:
 
-1. **Personal landing site** — Next.js 15 + TypeScript + Tailwind v4 single-page app at the repo root (`app/`, `components/`, `lib/`).
+1. **Personal site** — Next.js 15 + TypeScript + Tailwind v4 app at the repo root (`app/`, `components/`, `lib/`). The home page is a single-page scroll experience; `/blog` is a separate static MDX blog route.
 2. **README badge automation** — `scripts/update_readme.py` plus a GitHub Actions workflow that rewrites only the fenced `<!-- TECH_STACK_START -->...<!-- TECH_STACK_END -->` region of `README.md` on a daily schedule and on push to `main`. The rest of the README is hand-edited and must not be touched by the script.
 
 ## Commands
@@ -43,12 +43,15 @@ The workflow (`.github/workflows/update-readme.yml`) uses the `PROFILE_TOKEN` se
 
 ### Fonts
 
-- Inter (body) and VT323 (retro-terminal pixel accent) loaded via `next/font/google` in `app/layout.tsx`, exposed as `--font-inter` / `--font-vt323`, aliased in `@theme` to `--font-sans` / `--font-pixel`.
-- VT323 is brand-consistent with the GitHub profile README typing banner — don't swap it without reason. Use it for short accents (eyebrows, section labels, nav links, the Gmail pill email), not body copy.
+- Inter (body), VT323 (pixel accent), and Lora (serif, for blog) are loaded via `next/font/google` in `app/layout.tsx`, exposed as `--font-inter` / `--font-vt323` / `--font-lora`, aliased in `@theme` to `--font-sans` / `--font-pixel` / `--font-serif`.
+- VT323 is brand-consistent with the GitHub profile README typing banner — don't swap it without reason. Use it for short accents (eyebrows, section labels, nav links, the Gmail pill email, blog headings), not body copy.
+- Lora (`font-serif`) is used exclusively in the blog for post body content prose. Do not use it on the main landing page.
 
 ### Page composition
 
-`app/page.tsx` is a flat composition of `Navbar` → `Hero` → `Experience` → `Projects` → `Footer`. Section IDs (`#home`, `#experience`, `#projects`) are the nav targets; `scroll-padding-top: 5rem` in `globals.css` keeps the sticky nav from covering jumped-to headings. `Blogs` in the nav is intentionally inert (empty href, `aria-disabled`, dimmer styling) — don't wire it up to a route yet.
+`app/page.tsx` is a flat composition of `Navbar` → `Hero` → `Experience` → `Projects` → `Footer`. Section IDs (`#home`, `#experience`, `#projects`) are the nav targets; `scroll-padding-top: 5rem` in `globals.css` keeps the sticky nav from covering jumped-to headings.
+
+Nav items use full-path hrefs (`/#home`, `/#experience`, `/#projects`, `/blog`) so the `Navbar` component works correctly from both the home page and the `/blog` route. `app/blog/layout.tsx` wraps all blog routes with `<Navbar />` — the blog shares the same nav as the landing page.
 
 ### Content = `lib/data.ts`
 
@@ -102,10 +105,40 @@ Do not add `auto` or `loop` to the `TextRotate` in this component — it is driv
 
 `lib/utils.ts` exports a minimal `cn(...classes)` helper (no `clsx`/`tailwind-merge` dependency).
 
+### Blog system (`/blog`)
+
+The blog is a fully static MDX system — no database, no CMS.
+
+**Publishing:** drop a `.mdx` file in `content/posts/`. The slug is the filename without the extension. Frontmatter shape:
+
+```mdx
+---
+title: Post Title
+date: 2026-05-10
+description: One-line summary shown on the listing page.
+---
+```
+
+**`lib/blog.ts`** — the only place that reads `content/posts/`. Exports:
+- `getAllPosts()` — reads all `.mdx` files, parses frontmatter via `gray-matter`, returns sorted (newest first) array of `PostMeta`.
+- `getPostBySlug(slug)` — returns `Post` (includes `content: string`) or `null`.
+- `getAdjacentPosts(slug)` — returns `{ prev, next }` for older/newer navigation. `prev` = older post, `next` = newer post.
+- `formatDate(dateStr)` — formats ISO date string to "Month D, YYYY" in UTC to avoid timezone shifts.
+- Read time is computed as `ceil(wordCount / 200)`, minimum 1.
+
+**Routes:**
+- `app/blog/page.tsx` — listing page; calls `getAllPosts()` at build time.
+- `app/blog/[slug]/page.tsx` — post page; uses `generateStaticParams` to enumerate all slugs, `MDXRemote` from `next-mdx-remote/rsc` to render content. Custom `mdxComponents` map overrides `h1`–`h3` (VT323 pixel font), `p`, `a` (amber `#c9a45c` link color), `code`, `pre`, etc. All use the site's CSS token system (`text-(--fg)`, `bg-(--bg-elev)`).
+- The back-chevron at the top of each post and the "Back to all posts" link at the bottom both go to `/blog`.
+
+**Static export compatibility:** `next-mdx-remote/rsc` compiles MDX at build time; `generateStaticParams` enumerates slugs. No server runtime is needed — `output: "export"` in `next.config.ts` stays unchanged.
+
 ### Gotchas
 
 - **`SectionHeading.tsx`** uses deprecated v3 syntax (`font-[family-name:var(--font-pixel)]`, `text-[var(--accent)]`). Do not copy its patterns — use v4 canonical forms everywhere else.
 - **`SiLinkedin`** is not exported from `react-icons/si` (trademark removal). Use `FaLinkedin` from `react-icons/fa6` instead. `SiGithub`, `SiSubstack`, `SiGmail` are fine.
+- **Stale `.next` cache** can cause `MODULE_NOT_FOUND` errors after structural changes. Delete `.next/` and rebuild if you see missing chunk errors at runtime.
+- **Blog frontmatter dates** must be ISO strings (`2026-05-04`). `gray-matter` parses bare YAML dates as `Date` objects — `lib/blog.ts` calls `.slice(0, 10)` on the stringified value to normalise them.
 
 ## Architecture — README automation (`scripts/update_readme.py`)
 

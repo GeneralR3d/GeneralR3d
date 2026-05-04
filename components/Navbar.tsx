@@ -5,10 +5,10 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
-  { label: "Home", href: "#home" },
-  { label: "Experience", href: "#experience" },
-  { label: "Projects", href: "#projects" },
-  { label: "Blogs", href: "#", disabled: true },
+  { label: "Home", href: "/#home" },
+  { label: "Experience", href: "/#experience" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Blogs", href: "/blog" },
 ];
 
 export function Navbar() {
@@ -18,7 +18,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_80%,transparent)] backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <a
-          href="#home"
+          href="/#home"
           className="font-pixel text-2xl tracking-tight text-[var(--fg)] hover:text-[var(--accent)] transition"
         >
           Ding Ren
@@ -29,13 +29,7 @@ export function Navbar() {
             <a
               key={item.label}
               href={item.href}
-              aria-disabled={item.disabled || undefined}
-              className={`px-3 py-2 font-pixel text-xl transition ${
-                item.disabled
-                  ? "cursor-not-allowed text-[var(--fg-muted)]/60"
-                  : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
-              }`}
-              onClick={item.disabled ? (e) => e.preventDefault() : undefined}
+              className="px-3 py-2 font-pixel text-xl transition text-[var(--fg-muted)] hover:text-[var(--fg)]"
             >
               {item.label}
             </a>
@@ -65,16 +59,8 @@ export function Navbar() {
               <a
                 key={item.label}
                 href={item.href}
-                aria-disabled={item.disabled || undefined}
-                onClick={(e) => {
-                  if (item.disabled) e.preventDefault();
-                  else setOpen(false);
-                }}
-                className={`py-2 font-pixel text-xl ${
-                  item.disabled
-                    ? "cursor-not-allowed text-[var(--fg-muted)]/60"
-                    : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
-                }`}
+                onClick={() => setOpen(false)}
+                className="py-2 font-pixel text-xl text-[var(--fg-muted)] hover:text-[var(--fg)]"
               >
                 {item.label}
               </a>
