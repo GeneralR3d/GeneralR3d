@@ -138,7 +138,7 @@ description: One-line summary shown on the listing page.
 - **`SectionHeading.tsx`** uses deprecated v3 syntax (`font-[family-name:var(--font-pixel)]`, `text-[var(--accent)]`). Do not copy its patterns — use v4 canonical forms everywhere else.
 - **`SiLinkedin`** is not exported from `react-icons/si` (trademark removal). Use `FaLinkedin` from `react-icons/fa6` instead. `SiGithub`, `SiSubstack`, `SiGmail` are fine.
 - **Stale `.next` cache** can cause `MODULE_NOT_FOUND` errors after structural changes. Delete `.next/` and rebuild if you see missing chunk errors at runtime.
-- **Blog frontmatter dates** must be ISO strings (`2026-05-04`). `gray-matter` parses bare YAML dates as `Date` objects — `lib/blog.ts` calls `.slice(0, 10)` on the stringified value to normalise them.
+- **Blog frontmatter dates** must be ISO strings (`2026-05-04`). `gray-matter` parses bare YAML dates as `Date` objects — `lib/blog.ts` handles this by checking the type and using `.toISOString().split('T')[0]` for Date objects or `.slice(0, 10)` for strings to ensure a stable `YYYY-MM-DD` format.
 
 ## Architecture — README automation (`scripts/update_readme.py`)
 

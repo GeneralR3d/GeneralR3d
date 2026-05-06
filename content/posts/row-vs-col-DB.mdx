@@ -1,0 +1,42 @@
+---
+title: How much faster are columnar SQL databases for analytics and aggregation?;
+date: 2026-05-04
+description: Things they don't teach you in school ->  part 1
+---
+
+
+In this post, I'll be sharing my experience using Postgres and Clickhouse for analytics and aggregation.
+Investigate just how much faster columnar databases are for analytics and aggregation than traditional row-based databases.
+
+Some background. Columnar databases store each column (or attribute) in a seperate contiguous block of memory.
+This is opposed to traditional row based databases that store each row contiguously in memory. While row-based databases are more efficient for transactional workloads (OLTP) where you need to retrieve entire rows frequently,
+columnar databases are more efficient for analytical workloads (OLAP) where you need to retrieve large amounts of data from a few columns. Columnar databases also benefit from better compression because the data in each column is of the same type and format. 
+
+The question is just how much faster are they?
+
+### Approach
+
+We simulated millions of transactions by generating random data and inserting it into both Postgres and Clickhouse.
+
+Then ran the same analytics and aggregation queries on both databases and compared the performance.
+
+Built a streamlit dashboard which feeds the same SQL query to both postgres and clickhouse and presents the results side by side.
+
+
+
+### The dataset
+
+1 million trasactions simulating trading activity at a trading firm. Insert screenshot
+Types of data involved.
+
+### Queries used
+1. Simulate 
+
+
+## results
+
+
+### Other interesting takeaways learnt while doing this project about the world of quant from this project's research
+1. 
+
+Check out the repo [here](https://github.com/GeneralR3d/postgres-vs-clickhouse-for-OLAP).

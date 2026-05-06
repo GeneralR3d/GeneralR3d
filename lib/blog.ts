@@ -21,6 +21,14 @@ function calcReadTime(content: string): number {
   return Math.max(1, Math.round(words / 200));
 }
 
+function parseDate(date: any): string {
+  if (!date) return "";
+  if (date instanceof Date) {
+    return date.toISOString().split("T")[0];
+  }
+  return String(date).slice(0, 10);
+}
+
 export function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",
@@ -42,7 +50,7 @@ export function getAllPosts(): PostMeta[] {
       return {
         slug,
         title: data.title ?? slug,
-        date: data.date ? String(data.date).slice(0, 10) : "",
+        date: parseDate(data.date),
         description: data.description ?? "",
         readTime: calcReadTime(content),
       };
@@ -58,7 +66,7 @@ export function getPostBySlug(slug: string): Post | null {
   return {
     slug,
     title: data.title ?? slug,
-    date: data.date ? String(data.date).slice(0, 10) : "",
+    date: parseDate(data.date),
     description: data.description ?? "",
     readTime: calcReadTime(content),
     content,
