@@ -4,12 +4,11 @@ date: 2026-05-04
 description: Things they don't teach you in school ->  part 1
 ---
 
-
-In this post, I will be sharing my experience evaluating columnar databases against rownar databases we are all familiar with. I will also explain their differences in my own words.
+In this post, I will be sharing my experience evaluating columnar databases against rownar databases we are all familiar with. After explaining their differences in my own words, 
 I will answer the question: just how much faster are columnar databases are for analytics and aggregation than traditional row-based databases? 
 
 ## Background
-Firstly, for SQLite, the mostly commonly used single-file SQL database, stores the data for a single record is together in a contiguous block. This makes it a “rownar” file, as rows are stored sequentially. PostgreSQL adds a database management system process that manages concurrent reads and writes from other processes, but the underlying structure of how data is stored does not change. 
+To start, lets understand SQLite, the mostly commonly used single-file SQL database, stores the data for a single record is together in a contiguous block. This makes it a “rownar” file, as rows are stored sequentially. PostgreSQL adds a database management system process that manages concurrent reads and writes from other processes, but the underlying structure of how data is stored does not change. 
 
 ![row_nar](/img/rownar.jpg) 
 
@@ -30,11 +29,11 @@ However, for analytical access patterns, where you retrieve large amounts of dat
 The question is just how much faster are they?
 
 ## Approach
-For this, I simulated a typical trading ledger of a trading firm, with millions of transactions, and inserted the same data into both a row-based and column-based database like clickhouse. For row database, I chose Postgres and for column-based database, Clickhouse is used.
+For this, I simulated a typical trading ledger of a trading firm, with millions of transactions, and inserted the same data into both row-based and column-based databases. Further elaboration of the data can be found below. For the row database, I chose PostgreSQL and for the column-based database, Clickhouse is used.
 
-Then ran the same analytics and aggregation queries on both databases and compared the performance.
+Next I ran the same analytics and aggregation queries on both databases and compared the performance. 
 
-For simpler UI, I vibe-coded a streamlit dashboard which feeds the same SQL query to both Postgres and Clickhouse and presents the access times side by side.
+For an easier UI, I vibe-coded a streamlit dashboard which feeds the same SQL query to both Postgres and Clickhouse processes, running on seperate Docker containers on a 2024 M4 Pro MacBook Pro with 48GB of memory. The access times are displayed side by side
 
 ![dashboard](/img/streamlit.png)
 
@@ -42,7 +41,7 @@ For simpler UI, I vibe-coded a streamlit dashboard which feeds the same SQL quer
 
 ### The dataset
 
-1 million trasactions simulating trading activity at a trading firm. List of attributes suggested by Claude after brainstorming. Note that the understanding of the meaning of each of these attributes is not crucial in understanding the experiment.
+5 million transactions simulating trading activity at a typical trading firm. Each transaction represents a trade executed by a specific trader, at a specific trading desk and adoption of a specific trading strategy. The full list of metadata attributes associated with each trade was suggested by Claude after brainstorming. The script for generating the dataset also takes into account other factors like bid-ask spread, latency as well as trading patterns modeled after a Pareto distribution. Note that full understanding of the meaning of each of these attributes is not crucial in the understanding of the experiment.
 ![](/img/data.png)
 
 
