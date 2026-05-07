@@ -177,40 +177,47 @@ ORDER BY
 
 ## The results
  ### Query 1: 
+This is a simple scan of n number of entries, selecting all attributes.
+
 For less number of rows like 100, postgres egdes clickhouse out by 3.50%
 But for as the number of rows increase, their access times converge at around 1100 rows. 
 At 5000 rows, Clickhouse was 27.59% faster than Postgres.
-Explain 
 
  ### Query 2: 
---   Postgres  → full sequential scan, reads all columns
---   ClickHouse → reads only 4 column files, vectorised SUM
-Explain Postgres was faster by 0.0049s (6.05% faster than ClickHouse).
+This involves reading 4 attributes: desk, strategy, notional value and PNL from a specific date range. In this case it is a day. Postgres would perform a full sequential scan, reading all columns, while ClickHouse reads only 4 column files and performs a vectorised SUM. 
+
+Surprisingly, Postgres was actually faster by 0.0049s (6.05% faster than ClickHouse). 
+
+One reason could be that the number of entries within the date range might be too little for the advantages of columnar database to take effect. While Postgres does have to load all columns, Clickhouse on the other hand, has to read from 4 seperate blocks to find the 4 columns. For a small number of entries, the overhead from accessing seperate 4 LBA blocks might outweigh the savings, especially if only a small number of entries are read from each block. In this case, Postgres is able to scan through the small number of entries quicker. If the date range was larger say one month, we could expect Clickhouse to be faster.
 
 ### Query 3:
-SUM(notional) only needs the notional, trader_id, desk, and timestamp columns. The ORDER BY + LIMIT is a top-K problem that ClickHouse can optimise with its partial aggregation pipeline. At Tier C (full scan), ClickHouse should win decisively. At Tier A (high selectivity, few rows), a Postgres B-tree index on timestamp may actually be competitive — this is an important nuance for your blog post conclusion.
+This is query is similar to the previous, requiring a scan over a date range but only requesting for a few attributes: trader_id, desk, notional value and PNL
 
-### Query 4: This is the hardest aggregation query for row-based databases. The cross-product of three dimensions with high individual cardinality creates a large number of groups, and the aggregation requires holding substantial intermediate state.
-Why it favours columnar: ClickHouse's hash aggregation uses SIMD vectorisation on column vectors. Postgres's hash aggregate operates row-by-row. At 80 symbols × 12 desks × 5 currencies = up to 4,800 groups, and 100M rows, the difference in memory access patterns is severe.
+Result: Clickhouse beat Postgres by 25.82%
 
+This is case is exactly what we expected from the previous query! Since this query involves entries over a quarter instead of only a day, there are way more entries so the speed of access for each attribute that Clickhouse provides far outweigh the overhead from opening multiple blocks. Even with a B-Tree based index on the timestamp column in Postgres, the penalty from full row loads from disk was enough to slow it down significantly.
 
+### Query 4: 
+This cartesian product is one of the most expensive aggregation queries for row-based databases like Postgres. The cross-product of three dimensions, each with large number of unique values(cardinality) creates a large number of groups, requiring alot of data to be held in memory.
+
+Result: Clickhouse yields a 56.02% advantage over Postgres! 
+
+Although time complexity O(m x n x p) is the same, Postgres's hash aggregate operates row-by-row, while ClickHouse's hash aggregation uses Single Instruction Multiple Data (SMID) vectorisation on each column, meaning it operates on the whole column at once, this makes combining data for cross products extremely efficient. At 80 symbols × 12 desks × 5 currencies = up to 4,800 groups, and 5M entries, the difference in memory access patterns is quite significant.
+
+### Conclusion
+Columnar databases offers many clever optimizations for working with analytical or aggregation based workloads, where it really shines when accessing just a few attributes from a table with a large number of rows. Techniques like vectorized operations and compression also offer performance and storage savings. 
 
 ### Other interesting takeaways learnt from this project's research
-1. Zipf law. States that the 
 
-Core simulation laws / math models:
+1. Zipf law, which describes the phenomenon of heavyweight over representation. Formally, the probability of the k-th ranked item is proportional to 1/k^s where s is the exponent. The less common an item is, the less often it appears. This almost perfectly describes the stock market, where the first 10 most liquid symbols (Tier 1) like $NDVA, $APPL,$MSFT occupy the top ranks and collectively absorb ~60–70% of all trades. Tier 3 symbols at ranks 36–80 each appear rarely. 
+2. U-shaped intraday timing representing a larger trading volume at start of the day and end of the day, while the middle of the has lower trading volume.
+3. The Pareto distribution (also called a power-law distribution) describes phenomena where a small number of events account for most of the “mass.” Interesting this also perfectly describes number of trades against trade quantities, where there are a very large number of small quantity trades (retail investors) followed by a very long tail of a few enormous trade quantities (institutional investors)
+4. Geometric Brownian Motion (GBM) is used for modeling randomness mid market prices,thereby helping these trading firms determine their bid-ask spreads for daily and intraday price changes.
 
-- Geometric Brownian Motion (GBM) for daily and intraday price evolution.
-- Zipf law for symbol popularity/frequency.
-- Beta-mixture distribution for U-shaped intraday execution timing.
-- Truncated Pareto distributions for heavy-tailed order sizes.
-- Categorical discrete distributions for venue, order type, strategy, and currency.
-- Bernoulli models for side and cancellation outcomes.
-- Gaussian + jump mixture model for momentum desk edge/PnL behavior.
 
 Future learnings:
 1. Learn about the different types of trading strategies
-2. 
+2. Bernoulli models for side and cancellation outcomes.
 
 
 Check out the repo [here](https://github.com/GeneralR3d/postgres-vs-clickhouse-for-OLAP).
