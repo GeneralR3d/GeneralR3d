@@ -1,42 +1,216 @@
 ---
-title: How much faster are columnar SQL databases for analytics and aggregation?;
+title: Just how much faster are columnar SQL databases for analytics?;
 date: 2026-05-04
 description: Things they don't teach you in school ->  part 1
 ---
 
 
-In this post, I'll be sharing my experience using Postgres and Clickhouse for analytics and aggregation.
-Investigate just how much faster columnar databases are for analytics and aggregation than traditional row-based databases.
+In this post, I will be sharing my experience evaluating columnar databases against rownar databases we are all familiar with. I will also explain their differences in my own words.
+I will answer the question: just how much faster are columnar databases are for analytics and aggregation than traditional row-based databases? 
 
-Some background. Columnar databases store each column (or attribute) in a seperate contiguous block of memory.
-This is opposed to traditional row based databases that store each row contiguously in memory. While row-based databases are more efficient for transactional workloads (OLTP) where you need to retrieve entire rows frequently,
-columnar databases are more efficient for analytical workloads (OLAP) where you need to retrieve large amounts of data from a few columns. Columnar databases also benefit from better compression because the data in each column is of the same type and format. 
+## Background
+Firstly, for SQLite, the mostly commonly used single-file SQL database, stores the data for a single record is together in a contiguous block. This makes it a “rownar” file, as rows are stored sequentially. PostgreSQL adds a database management system process that manages concurrent reads and writes from other processes, but the underlying structure of how data is stored does not change. 
+
+![row_nar](/img/rownar.jpg) 
+
+In other words, traditional row-based SQL databases store data exactly like a CSV file would. Each Logical Addressable Block (LBA) on disk stores a certain number of rows, but for each row or record, it stores every single attribute or column. This structure is excellent for OLTP, which are transactional workloads, where the access pattern often involves finding and updating only specific records using the ID, and less aggregation.
+
+Columnar databases on the other hand, store each column or attribute in seperate LBAs. This allows each LBA to hold one attribute for every single record or entry in the database table. All values in each column are stored in ways resembling vectors, where the values are column-contiguous instead of row-contiguous. This arrangement provides optimisations in both access times and storage space. Firstly, for OLAP workloads like dashboarding, where many records from a few attributes are required. 
+
+![columnar](/img/columnar.jpg)
+
+Instead of scanning through all the rows and loading all the attributes into memory before discarding those you don’t want, columnar databases only scan through the LBAs that contain data for the attributes you request, then combining them together, saving on access times and working memory requirements. Columnar database also don’t store the primary key or ID in every LBA block, instead relying on Implicit Ordinal Position, essentially keeping track of the “offset” of each entry from the starting entry, similar to an array. In terms of storage space optimisations, for attributes that contains many repeating values of the same time, like enums, compression can even further reduce the storage size.
+
+So when to use which? Look at your access pattern. If the access pattern is more transactional when you are only updating certain entries and rarely performing row-scans,  then row-based databases is the correct choice. 
+
+However, for analytical access patterns, where you retrieve large amounts of data from a few columns and performing aggregation functions  like `COUNT`, `SUM`, `AVG`, to find insights, go with columnar databases.
+
+
 
 The question is just how much faster are they?
 
-### Approach
-
-We simulated millions of transactions by generating random data and inserting it into both Postgres and Clickhouse.
+## Approach
+For this, I simulated a typical trading ledger of a trading firm, with millions of transactions, and inserted the same data into both a row-based and column-based database like clickhouse. For row database, I chose Postgres and for column-based database, Clickhouse is used.
 
 Then ran the same analytics and aggregation queries on both databases and compared the performance.
 
-Built a streamlit dashboard which feeds the same SQL query to both postgres and clickhouse and presents the results side by side.
+For simpler UI, I vibe-coded a streamlit dashboard which feeds the same SQL query to both Postgres and Clickhouse and presents the access times side by side.
+
+![dashboard](/img/streamlit.png)
 
 
 
 ### The dataset
 
-1 million trasactions simulating trading activity at a trading firm. Insert screenshot
-Types of data involved.
-
-### Queries used
-1. Simulate 
+1 million trasactions simulating trading activity at a trading firm. List of attributes suggested by Claude after brainstorming. Note that the understanding of the meaning of each of these attributes is not crucial in understanding the experiment.
+![](/img/data.png)
 
 
-## results
+- `trade_id`: 
+- `timestamp`: Generated with U-shaped intraday trading pattern, mapped to 09:30-16:00 eastern time.
+- `symbol`: Basket of 80 symbols, sampled from Zipf distribution.
+- `trader_id`: Trader identifier sampled using lognormal activity-weighted probabilities.
+- `desk`: EQ_FLOW, EQ_ARBS, STAT_ARB, MOMENTUM, MARKET_MAKING, INDEX_ARB, RISK_ARB, QUANT_MACRO, HFT_DESK, PRIME_SERVICES, PROGRAM_TRADING, DERIVATIVES_HEDG.
+- `strategy`: 70% trader-preferred strategy, 30% chance random desk-specific strategy. For full list of strategies see below.
+- `side`: BUY/SELL.
+- `quantity`: Based on truncated Pareto distribution sizes.
+- `price`: GBM mid-price plus/minus half spread; spread sampled uniformly.
+- `notional`: Quantity X price.
+- `currency`: 
+- `pnl`: In USD.
+- `venue`: NYSE, NASDAQ, DOWJ.
+- `order_type`: Desk-conditional categorical draw, then ICEBERG constraints and block-size promotions applied.
+- `latency_us`: Order-type baseline uniform latency + venue delays. HKEX highest latency.
+- `is_cancelled`: Probability modelled by Bernoulli outcome by order type and desk.
+- `counterparty_id`: 
+
+ Strategy enums (strategy) by desk (I have no idea what they are): 
+
+   - EQ_FLOW: client_facilitation, risk_transfer
+   - EQ_ARBS: merger_arb, dual_listed_arb, stub_arb
+   - STAT_ARB: pairs_trade, mean_reversion, cointegration
+   - MOMENTUM: trend_following, breakout, momentum_carry
+   - MARKET_MAKING: passive_quote, skew_management
+   - INDEX_ARB: index_rebalance_arb, etf_nav_arb, basis_trade
+   - RISK_ARB: event_driven, capital_structure_arb, vol_arb
+   - QUANT_MACRO: cross_asset_rotation, macro_factor, rates_equity_link
+   - HFT_DESK: latency_arb, queue_fade, micro_momentum
+   - PRIME_SERVICES: financing_optimization, synthetic_exposure, inventory_rotation
+   - PROGRAM_TRADING: basket_execution, vwap, twap, is_algo
+   - DERIVATIVES_HEDGE: delta_hedge, gamma_scalp, vega_rebalance
 
 
-### Other interesting takeaways learnt while doing this project about the world of quant from this project's research
-1. 
+
+
+
+### Queries used for 1 million entries
+1. Simple sanity check. Selecting the first 1000 rows.
+
+```
+SELECT * FROM trades LIMIT 1000;
+```
+2. End of day aggregation of PNL by each trading desk (with its strategy)
+```
+SELECT
+    CAST(timestamp AS DATE)          AS trade_date,
+    desk,
+    strategy,
+    COUNT(*)                         AS trade_count,
+    SUM(pnl)                         AS total_pnl,
+    AVG(pnl)                         AS avg_pnl,
+    MIN(pnl)                         AS worst_trade,
+    MAX(pnl)                         AS best_trade,
+    SUM(notional)                    AS total_notional
+FROM trades
+WHERE
+    is_cancelled = FALSE
+    AND pnl IS NOT NULL
+    AND timestamp >= '2022-01-01'
+    AND timestamp <  '2024-01-01'
+GROUP BY
+    CAST(timestamp AS DATE),
+    desk,
+    strategy
+ORDER BY
+    trade_date ASC,
+    total_pnl DESC;
+```
+3. Top 25 traders by Notional trading volume within a quarter
+```
+SELECT
+    trader_id,
+    desk,
+    COUNT(*)                                        AS trade_count,
+    SUM(notional)                                   AS total_notional,
+    SUM(CASE WHEN side = 'BUY'
+             THEN notional ELSE 0 END)              AS buy_notional,
+    SUM(CASE WHEN side = 'SELL'
+             THEN notional ELSE 0 END)              AS sell_notional,
+    AVG(notional)                                   AS avg_notional_per_trade,
+    SUM(pnl)                                        AS total_pnl,
+    SUM(latency_us * notional) / SUM(notional)      AS notional_wtd_latency
+FROM trades
+WHERE
+    is_cancelled = FALSE
+    AND notional IS NOT NULL
+    AND timestamp >= '2023-01-01'
+    AND timestamp <  '2023-04-01'
+GROUP BY
+    trader_id,
+    desk
+ORDER BY
+    total_notional DESC
+LIMIT 25;
+```
+1. Cartesian product of Symbol × Desk × Currency
+```
+SELECT
+    symbol,
+    desk,
+    currency,
+    side,
+    COUNT(*)                                            AS trade_count,
+    SUM(CASE WHEN is_cancelled = TRUE
+             THEN 1 ELSE 0 END)                         AS cancelled_count,
+    SUM(notional)                                       AS total_notional,
+    AVG(price)                                          AS avg_price,
+    STDDEV(price)                                       AS price_stddev,
+    SUM(pnl)                                            AS total_pnl,
+    AVG(pnl)                                            AS avg_pnl,
+    AVG(CASE WHEN pnl > 0
+             THEN 1.0 ELSE 0.0 END)                     AS win_rate,
+    AVG(latency_us)                                     AS avg_latency_us,
+    MAX(notional)                                       AS max_notional
+FROM trades
+WHERE
+    timestamp >= '2022-01-01'
+    AND timestamp <  '2024-01-01'
+GROUP BY
+    symbol,
+    desk,
+    currency,
+    side
+ORDER BY
+    total_pnl DESC;
+```
+
+
+## The results
+ ### Query 1: 
+For less number of rows like 100, postgres egdes clickhouse out by 3.50%
+But for as the number of rows increase, their access times converge at around 1100 rows. 
+At 5000 rows, Clickhouse was 27.59% faster than Postgres.
+Explain 
+
+ ### Query 2: 
+--   Postgres  → full sequential scan, reads all columns
+--   ClickHouse → reads only 4 column files, vectorised SUM
+Explain Postgres was faster by 0.0049s (6.05% faster than ClickHouse).
+
+### Query 3:
+SUM(notional) only needs the notional, trader_id, desk, and timestamp columns. The ORDER BY + LIMIT is a top-K problem that ClickHouse can optimise with its partial aggregation pipeline. At Tier C (full scan), ClickHouse should win decisively. At Tier A (high selectivity, few rows), a Postgres B-tree index on timestamp may actually be competitive — this is an important nuance for your blog post conclusion.
+
+### Query 4: This is the hardest aggregation query for row-based databases. The cross-product of three dimensions with high individual cardinality creates a large number of groups, and the aggregation requires holding substantial intermediate state.
+Why it favours columnar: ClickHouse's hash aggregation uses SIMD vectorisation on column vectors. Postgres's hash aggregate operates row-by-row. At 80 symbols × 12 desks × 5 currencies = up to 4,800 groups, and 100M rows, the difference in memory access patterns is severe.
+
+
+
+### Other interesting takeaways learnt from this project's research
+1. Zipf law. States that the 
+
+Core simulation laws / math models:
+
+- Geometric Brownian Motion (GBM) for daily and intraday price evolution.
+- Zipf law for symbol popularity/frequency.
+- Beta-mixture distribution for U-shaped intraday execution timing.
+- Truncated Pareto distributions for heavy-tailed order sizes.
+- Categorical discrete distributions for venue, order type, strategy, and currency.
+- Bernoulli models for side and cancellation outcomes.
+- Gaussian + jump mixture model for momentum desk edge/PnL behavior.
+
+Future learnings:
+1. Learn about the different types of trading strategies
+2. 
+
 
 Check out the repo [here](https://github.com/GeneralR3d/postgres-vs-clickhouse-for-OLAP).

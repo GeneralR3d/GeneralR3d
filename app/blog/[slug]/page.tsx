@@ -52,6 +52,14 @@ const mdxComponents = {
   strong: (props: React.HTMLAttributes<HTMLElement>) => (
     <strong className="font-semibold text-(--fg)" {...props} />
   ),
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img
+      className="block w-full h-auto max-h-[60vh] object-contain mx-auto my-6 rounded-lg border border-(--border) bg-(--bg-elev)"
+      loading="lazy"
+      decoding="async"
+      {...props}
+    />
+  ),
 };
 
 export async function generateStaticParams() {
