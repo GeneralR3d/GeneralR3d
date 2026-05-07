@@ -1,6 +1,6 @@
 ---
-title: Just how much faster are columnar SQL databases for analytics?;
-date: 2026-05-04
+title: How much faster are columnar databases for analytics workflows?;
+date: 2026-05-07
 description: Things they don't teach you in school ->  part 1
 ---
 
@@ -45,25 +45,26 @@ For an easier UI, I vibe-coded a streamlit dashboard which feeds the same SQL qu
 ![](/img/data.png)
 
 
-- `trade_id`: 
+- `trade_id`
 - `timestamp`: Generated with U-shaped intraday trading pattern, mapped to 09:30-16:00 eastern time.
 - `symbol`: Basket of 80 symbols, sampled from Zipf distribution.
-- `trader_id`: Trader identifier sampled using lognormal activity-weighted probabilities.
+- `trader_id`: Trader identifier modeled after lognormal activity-weighted probabilities.
 - `desk`: EQ_FLOW, EQ_ARBS, STAT_ARB, MOMENTUM, MARKET_MAKING, INDEX_ARB, RISK_ARB, QUANT_MACRO, HFT_DESK, PRIME_SERVICES, PROGRAM_TRADING, DERIVATIVES_HEDG.
 - `strategy`: 70% trader-preferred strategy, 30% chance random desk-specific strategy. For full list of strategies see below.
 - `side`: BUY/SELL.
 - `quantity`: Based on truncated Pareto distribution sizes.
-- `price`: GBM mid-price plus/minus half spread; spread sampled uniformly.
+- `price`: GBM mid-price +/- half spread; spread sampled uniformly.
 - `notional`: Quantity X price.
-- `currency`: 
+- `currency`
 - `pnl`: In USD.
-- `venue`: NYSE, NASDAQ, DOWJ.
-- `order_type`: Desk-conditional categorical draw, then ICEBERG constraints and block-size promotions applied.
+- `venue`: NYSE, NASDAQ, DOWJ, HKEX, SGX.
+- `order_type`: MARKET, LIMIT, PEGGED
 - `latency_us`: Order-type baseline uniform latency + venue delays. HKEX highest latency.
 - `is_cancelled`: Probability modelled by Bernoulli outcome by order type and desk.
-- `counterparty_id`: 
+- `counterparty_id`
 
- Strategy enums (strategy) by desk (I have no idea what they are): 
+ Strategy enums (strategy) by desk: 
+I have no idea what they are
 
    - EQ_FLOW: client_facilitation, risk_transfer
    - EQ_ARBS: merger_arb, dual_listed_arb, stub_arb
@@ -82,7 +83,7 @@ For an easier UI, I vibe-coded a streamlit dashboard which feeds the same SQL qu
 
 
 
-### Queries used for 1 million entries
+### Queries used for 5 million entries
 1. Simple sanity check. Selecting the first 1000 rows.
 
 ```
@@ -141,7 +142,7 @@ ORDER BY
     total_notional DESC
 LIMIT 25;
 ```
-1. Cartesian product of Symbol × Desk × Currency
+4. Cartesian product of Symbol × Desk × Currency
 ```
 SELECT
     symbol,
