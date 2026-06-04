@@ -105,10 +105,10 @@ export const projects: Project[] = [
     link: "https://github.com/GeneralR3d/TechFin",
   },
   {
-    name: "Rachel",
+    name: "Rachael",
     description: "A chatbot that has its own personality, learns about every human it meets through conversations.",
     image: '/images/rachel.jpeg',
-    link: "https://github.com/GeneralR3d/Rachel",
+    link: "https://github.com/GeneralR3d/Rachael",
   },
   {
     name: "3D Portfolio",
@@ -123,9 +123,9 @@ export const projects: Project[] = [
     link: "https://github.com/GeneralR3d/Sportify",
   },
   {
-    name: "Vista Planner",
-    description: "Interactive Singapore retirement planner — models CPF (OA/SA/MA/RA), SRS tax optimization, and personal brokerage together in a single year-by-year simulation from today to death age.",
+    name: "Retirement.SG",
+    description: "Singapore's #1 financial projection and retirement planning app — models CPF (OA/SA/MA/RA), SRS tax optimization, and personal brokerage together in a single year-by-year simulation from today to death.",
     image: '/images/retirement_planner.png',
-    link: "https://retirement-dashboard-chi.vercel.app",
+    link: "https://retirement.sg",
   },
 ];
