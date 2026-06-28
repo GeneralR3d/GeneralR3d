@@ -99,16 +99,22 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "Rachel",
+    description: "Telegram chatbot Rachel responses based on her mood, forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Sometimes she will choose to dao (ignore) you!",
+    image: '/images/rachel.jpeg',
+    link: "https://github.com/GeneralR3d/Rachel",
+  },
+  {
+    name: "Retirement.SG",
+    description: "Singapore's #1 financial projection and retirement planning app — models CPF (OA/SA/MA/RA), SRS tax optimization, and personal brokerage together in a single year-by-year simulation from today to death.",
+    image: '/images/retirement_planner.png',
+    link: "https://retirement.sg",
+  },
+  {
     name: "TechFin",
     description: "A market intelligence platform transforming global news, social chatter, and portfolio context into actionable investing suggestions for users through knowledge graphs. 1st place at the 2026 NTU Fintech Innovators Hackathon!",
     image: '/images/techfin.png',
     link: "https://github.com/GeneralR3d/TechFin",
-  },
-  {
-    name: "Rachael",
-    description: "A chatbot that has its own personality, learns about every human it meets through conversations.",
-    image: '/images/rachel.jpeg',
-    link: "https://github.com/GeneralR3d/Rachael",
   },
   {
     name: "3D Portfolio",
@@ -121,11 +127,5 @@ export const projects: Project[] = [
     description: "Weather-aware sports venue recommender for Singapore. Ranks ~1,000 facilities in real time by combining live PSI, UV, rainfall, and temperature data with proximity scoring and transport mode filters.",
     image: '/images/sportify.png',
     link: "https://github.com/GeneralR3d/Sportify",
-  },
-  {
-    name: "Retirement.SG",
-    description: "Singapore's #1 financial projection and retirement planning app — models CPF (OA/SA/MA/RA), SRS tax optimization, and personal brokerage together in a single year-by-year simulation from today to death.",
-    image: '/images/retirement_planner.png',
-    link: "https://retirement.sg",
   },
 ];
