@@ -109,7 +109,7 @@ export function Hero() {
 
           <p className="mt-6 max-w-sm text-base leading-relaxed text-(--fg)">
 Software and AI engineer who builds products from zero to one — with the speed and ownership of a founder.
-With experience across a SF Bay Area venture studio, a national healthcare tech firm, and an Indonesian fintech unicorn, he has shipped production-grade full-stack and LLM-powered products across industries. He thinks in outcomes, moves fast, and owns the entire stack — from Figma wireframes to cloud deployment. Currently a final year student at NTU Singapore.
+With experience across a San Francisco Bay Area venture studio, a national healthcare tech firm, and an Indonesian fintech unicorn, he has shipped production-grade full-stack and LLM-powered products across industries. He thinks in outcomes, moves fast, and owns the entire stack — from Figma wireframes to cloud deployment. Currently a final year student at NTU Singapore.
           </p>
         </div>
       </div>

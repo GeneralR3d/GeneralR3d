@@ -100,7 +100,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     name: "Rachel",
-    description: "Telegram chatbot Rachel responses based on her mood, forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Sometimes she will choose to dao (ignore) you!",
+    description: "Self-evolving Telegram chatbot Rachel responses based on her mood, forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Sometimes she will choose to dao (ignore) you!",
     image: '/images/rachelpfp.jpeg',
     link: "https://github.com/GeneralR3d/Rachel",
   },
