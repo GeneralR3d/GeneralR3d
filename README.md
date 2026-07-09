@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://dingrentuan.com"><img src="https://img.shields.io/badge/Website-generalr3d.github.io-58A6FF?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"/></a>&nbsp;
+  <a href="https://dingrentuan.com"><img src="https://img.shields.io/badge/Website-dingrentuan.com-58A6FF?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"/></a>&nbsp;
   <a href="https://www.linkedin.com/in/ding-ren-tuan"><img src="https://img.shields.io/badge/LinkedIn-ding--ren--tuan-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/></a>&nbsp;
   <a href="mailto:tdrdingren@gmail.com"><img src="https://img.shields.io/badge/Email-tdrdingren@gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/></a>
 </p>
