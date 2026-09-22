@@ -1,46 +1,48 @@
 ---
-title: What I learnt from building a self-evolving AI agent with personality
+title: What I learnt from building a self-evolving AI agent with personality;
 date: 2026-09-21
-description: 
+description: https://t.me/Rachel_SG_bot
 ---
+
+<img src="/images/rachelpfp.jpeg" alt="Rachel" className="w-32 h-32 object-cover rounded-full float-right ml-6 mb-3 mt-1" />
 
 In this article Im going to cover what I have learnt from building Rachel, a self-evolving AI agent with a personality.
 
-General agent harnesses today like OpenClaw, Hermes, Grok and Instinct, all try to compete for the same things, being as capable as possible. This meant slapping on as many plug-ins, extensions or tools as possible. However, what you often find missing from these capability-focused agent harnesses, when compared to an AI assistant we actually dream about having, like JARVIS from Iron Man, is their personality, a soul and proper long-term memory about you.
+General agent harnesses today like OpenClaw, Hermes, Grok and Instinct, all try to compete for the same things, being as capable as possible. This meant slapping on as many plug-ins, extensions or tools as possible. However, what you often find missing from these capability-focused agent harnesses, as compared to an AI assistant we actually dream about having, like JARVIS from Iron Man, is a personality, a soul and proper long-term memory about you.
 
-Therefore my goal with Rachel wasn’t exactly to create the most capable agent harness, but instead, one that feels the most human. This meant focusing on personality, memory and a soul, and being intentional with the tools and capabilities I give to Rachel.
+Therefore, my goal with Rachel wasn’t exactly to create the most capable agent harness, but instead, one that feels the most human. This meant focusing on personality, memory and a soul, and being intentional with the tools and capabilities I give to Rachel.
 
-In this article I am going to touch on the things that make Rachel different from other agents, and what I learnt about the human brain (ps. it does so many things subconsciously that we dont even stop to think about)
+In this article I am going to touch on the things that make Rachel different from other agents, and what I learnt about the human brain (ps. so many things it does subconsciously that we don’t even stop to think about)
 
-### Rachel
+## Rachel
 
-Designed to be like an online friend you chat with and add to your groupchats, Rachel reads every message, and constantly learns about every person it encounters. It does this by slowly collecting facts about each person and building a profile automatically, using memory pipelines and partitioned knowledge graphs. Rachel then responds when she deems appropriate, just like a human. (Ps. If you start to gossip about her, she responds immediately!)
+Designed to be like an online friend you chat with and add to your group chats, Rachel reads every message, and constantly learns about every person it encounters. It does this by automatically collecting facts about each person and building a profile slowly, using memory pipelines and partitioned knowledge graphs. Rachel then responds when she deems appropriate, just like a human. (Ps. If you start to gossip about her, she responds immediately!)
 
-Rachel was never designed to be an AI girlfriend or a parasocial crutch, but instead, a project to test how closely an AI can mimic the subtle, subconscious context we juggle, as well as our behaviour patterns each time we text a friend. 
+Rachel was never designed to be an AI girlfriend or a parasocial relationship , but instead, a project to test how closely an AI can mimic our behavioural patterns, and that subtle, subconscious context we juggle everytime we text a friend. 
 
 ### The importance of a backstory
 
-Maybe this is inspired by WestWorld characters, but I before I even started, I knew the best characters cannot be created with rules, but instead with a comprehensive backstory she can call her own. 
+This was perhaps inspired by WestWorld, but I before I even started, I knew the best characters were created comprehensive backstories they can call their own, rather than hundreds rules and instructions.
 
 Research agrees with this. In **Scaling Law in LLM Simulated Personality,** Y. Bai argues that the more detailed and realistic the persona profile, the closer the simulated personality gets to human norms, and in order to create “a living, narratively coherent character endowed with memories, goals, fears, relationships, voice, and a consistent inner life," the backstory needed to contain the over-arching values, believes and motivations important to the character, exactly like humans. This story-driven backstory construction also outperformed plain demographic profiles by a wide margin, with distribution distance to human baselines dropping from 70.25 down to 23.75 as profiles progressed from standard to human-authored narrative characters. [1]
 
-Therefore, instead of hard-prompting Rachel’s expected behaviour in every possible scenario, I focused on writing her story. As a start, I gave Rachel a backstory of the most average young Singaporean girl to make her more relatable to my first group of target users which were university students. So, her story is based on a middle-income Singaporean Chinese girl who grew up in Church, studies business at NTU and lives across the island in Punggol. She grew up playing piano, loves to cafe hop on weekends, and loves to watch shows on Netflix. Check out her full system prompt in the repo: https://github.com/GeneralR3d/Rachel 
+Thus, instead of hard-prompting Rachel’s expected behaviour in every possible scenario, I focused on writing her story. As a start, I gave Rachel a backstory of the most average young Singaporean girl to make her more relatable to my first group of users which were university students. So, her story is based on a middle-income Singaporean Chinese girl who grew up in Church, studies business at NTU and lives across the island in Punggol. She grew up playing piano, loves to cafe hop on weekends, and loves to watch shows on Netflix. Check out her full system prompt in the [repo](https://github.com/GeneralR3d/Rachel)
 
 ### Personality and weekly schedule
 
-After a backstory, the next step was giving Rachel personality traits. Rachel’s personality traits consist of 10 tweakable components, built on the **Big Five (Five-Factor Model)** as its measurement framework. This is a widely recognized set of psychological measures with established reliability and validity from the field of personality psychology. Beyond this, im excited to come up with a framework to test and quantify Rachel’s responses based on this framework in a measurable way to allow for meaningful iteration and improvement. 
+After a backstory, the next step was giving Rachel personality traits. Rachel’s personality traits consist of 10 tweakable components, built on the **Big Five (Five-Factor Model)** as its measurement framework. This is a widely recognized set of psychological measures with established reliability and validity from the field of personality psychology. For each of the 10 traits, different levels (low, medium, high) were created, each with its own set of descriptive prompts that add to her personality. This way, Rachel’s personality could be tweaked in real time via API calls that fetch and inject these prompts into Rachel as she responds.
 
-Next up was her own weekly schedule. Just like a human, I gave Rachel a weekly calander, which consists of hourly activities for a whole week. In addition to the activities themselves, each activity also consists of the names of the people she was doing the activity with, and one interesting thing that happened during that activity. These were crucial in providing grounded context for questions regarding Rachel’ day, and questions that attempt to check her availability or make plans with her. Without an actual schedule, her responses would be incoherent as the model attempts to make up these information. Since her schedule was long, instead of loading her entire calander into context, I instead created custom tools for her to selectively fetch certain portions of her weekly schedule. For now, Rachel lives the same day every week. However, this weekly schedule could be very easily expanded into a monthly or even yearly schedule, and could be made to re-write itself periodically via cron jobs.
+Next up was her own weekly schedule. Just like a human, I gave Rachel a weekly calendar, which consists of hourly activities for a whole week. In addition to the activities themselves, each activity also consists of the names of the people she was doing the activity with, and one interesting thing that happened during that activity. These were crucial in providing grounded context for questions regarding Rachel’ day, and questions that attempt to check her availability or make plans with her. Without an actual schedule, her responses would be incoherent as the model attempts to make up these information. Since her schedule was long, instead of loading her entire calander into context, I instead created custom tools for her to selectively fetch certain portions of her weekly schedule. For now, Rachel lives the same day every week. This could be  easily expandable into a monthly or even yearly schedule, and could be made to re-write itself periodically via another service, or cron jobs.
 
-### Engineering decisions: Her reply loop
+## Engineering decisions: Rachel’s reply loop
 
-!Screenshot 2026-09-20 at 8.16.43 PM.png
+![Rachel reply loop](/images/rachel-reply-loop.png)
 
-Rachel’s main reply loop consists of 5 nodes in a graph, seperated by reply-gates. In order to make her more human in group chats and conversations, I made a conscious decision to not have people tag or mention Rachel everytime we wanted a response from her. At the same time, if we left the tags and mentions turned off, she would reply to every single message, making her extremely annoying. 
+Rachel’s main reply loop consists of 5 nodes in a graph, separated by reply-gates. In order to make her appear more human in group chats and conversations, I made a conscious decision not to have users mention or tag Rachel every time we wanted a response from her. At the same time, if we left the tags and mentions turned off, she would reply to every single message, making her extremely annoying. 
 
 To solve this, a simple LLM-based gate was used to triage every message coming in and decide if it needs to involve Rachel. This router is given a very simple prompt that outlines the types of messages that would warrant a reply from Rachel. This is crucial in making Rachel behave more like a human friend, since a human would likely respond only when you mention her name, or ask a question involving everyone in the groupchat. Explicitly mentioning Rachel would by-pass this LLM gate completely, since she would have to reply when mentioned or tagged.
 
-Next is her self-adjusting mood. Rachel is capable of adjusting her mood in real time based on the current conversation, using a seperate parallel node that reads the chat and identifies the tone of the conversations. 
+Next is her self-adjusting mood. Rachel is capable of adjusting her mood in real time based on the current conversation, using a separate parallel node that reads the chat and identifies the tone of the conversations. 
 
 After identifying the mood, Rachel then adjusts her communication styles in real-time, based on granular instructions to govern her language and response patterns, for example, typing in all-caps, using more emojis and spamming multiple messages when she feels excited, vs using fewer messages with longer sentences, and a more serious tone when she is sad. 
 
@@ -54,19 +56,28 @@ Here are some of the moods:
 - drama_sharing: gossiping or sharing dramatic stories
 - flirt: romantic, suggestive, or attraction-based tone
 
-### How to think about AI memory:
+## How to think about AI memory:
 
 Broadly speaking, AI memory can be classified into the following: 
 
-- Episodic memory → tied to events, or episodes, these are typically things that has happened to someone at a specific date and time
-- Semantic memory → these are more long-term, durable and conscious knowledge of facts, word meanings, and general world rules
-- Procedural → How to perform certain tasks, ie agent skills
+- **Episodic memory** → tied to events, or episodes, these are typically things that has happened to someone at a specific date and time
+- **Semantic memory** → these are more long-term, durable and conscious knowledge of facts, word meanings, and general world rules
+- **Procedural memory** → How to perform certain tasks, ie agent skills
+
+Next we look at the steps involved in the lifecycle of AI memory
+
+Steps:
+
+1. Memory creation → automatic extraction from conversation
+2. Memory consolidation and de-duplication → Combining memories, updating old memories and invalidating memories that have now become irrelevant
+3. Memory storage → knowledge graphs
+4. Memory retrieval → searching, re-ranking, injecting
 
 ### Rachel’s memory system
 
-As mentioned previously, Rachel constantly forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Her memory system consists of three components:
+Rachel constantly forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Her memory system consists of three components:
 
-Firstly are free-form facts or information about every person she has spoken to, or listened to in group chats. These include person-specific ……
+Firstly and most important are free-form memories about every person she has spoken to, or listened from, in group chats. Unlike the large corpus of information processed by typical RAG, these “episodes” are short, mostly single-sentence bit of information that are either told explicitly to Rachel by the user, or inferred from naturally-occurring conversations between other people. Every episode also contain metadata like date and time. This episodic memory system is one of the most crucial last missing piece in AI memory systems today. This naturally mimics human behaviour during texting; all of these are usually done subconsciously in our brains.
 
 Episodes, or events, like 
 
@@ -78,7 +89,7 @@ Episodes, or events, like
  {{"role": "user", "content": "Jamie: Yeah — my sister just moved to Portland too. I'm happy but honestly a bit overwhelmed. My boss gave me a promotion to team lead last week as well."}}]
 ```
 
-These get converted to facts like
+get turned into to memories like
 
 ```bash
     "Jamie adopted a beagle mix puppy named Max around March 1-2, 2025",
@@ -89,61 +100,75 @@ These get converted to facts like
 
 ```
 
-In addition, each of these “episodes” are also tagged with metadata like date and time. 
+As for implementation, I adopted [Graphiti](https://github.com/getzep/graphiti), and open-sourced Real-time knowledge graph built by the team at [Zep](https://www.getzep.com/), which was created to handle this kind of information specifically: short, tiny episodes in large quantities. 
 
-For a start, no forgetting mechanism or invalidation. Eposides are simply retrieved up to a limit. With no re-ranking. 
+After we generate the episodes on our own, Graphiti automatically extracts and resolves entities and edges from these episodes, deduplicates them, and performs temporal conflict resolution, so newer information can supersede outdated facts. 
 
-Secondly, its a user-profile containing fields like …. that the memory pipeline extracts from. Since this is capable of being overwritten, it is not meant to be durable and is meant to only serve as Rachel’s latest “perception” of each user.
+For storage, Graphiti natively supports popular graph DBMS like [Neo4j](https://neo4j.com) and [FalkorDB](https://www.falkordb.com/). As for memory retrieval, Graphiti also supports the typical hybrid search with reciprocal-rank fusion (RRF), with a bunch more customisation options for re-ranking the episodes.
+
+What also nice about Graphiti is that there is support for partitioned knowledge graphs, meaning all of the episodes belonging to seperate users could all live in the same Neo4j graph, managed by one DBMS instance. This logical partition by `user_id` ensures that Rachel only fetches memories related to one user within a single query, preventing the possibility of cross contamination, while at the same time removing the need to spin up different DMBS instances or manage different volumes.
+
+Second, Rachel has a user-profile containing various fields that the user-profile memory pipeline extracts from. As a start, I gave Rachel 16 categories for her to learn about all of her friends. Again, these were derived from my own experiences; based on all the information I knew about my friends, I categorising them and landed roughly with these 16 categories. The information that Rachel stores in this user-profile section is also not designed to be durable, but instead, capable of being updated each time by her memory system as times goes on. Once again, this is designed to mimic how our “perception” and impression of our friends constantly change over time. For memories that Rachel has made in the past, Rachel still relies on retrieving from her episodic memory system.
+
+```bash
+1. Generation & age bracket
+2. Current location
+3. Hometown
+4. Life stage
+5. Daily grind — study, work, role, or job search
+6. Geek-out topic — passions they can talk about for hours
+7. Media tastes — movies, music, podcasts, shows, etc.
+8. Food vibe — preferences, cooking habits, dietary restrictions
+9. Weekend default — typical weekend style
+10. Pets
+11. Living situation
+12. Relationship status
+13. Family dynamics
+14. Cultural background & religion
+15. Social battery — introvert/extrovert/ambivert and social energy
+16. Sense of humour
+```
 
 Lastly is a self-maintaining list of factual information (latest social trends, hyperlocal bits of information) that forms her world view. How it differs from user-specific memories however, is that fact that these information are more generally applicable in future conversations across different contexts, has meaningful staying power beyond the current conversation. These facts in her world view are also separate from any person, and do not contain any names or personal information. 
 
 For example: 
 
+```bash
 “Claris mum always says you must give oranges in pairs during cny, giving one is bad luck”
+```
 
 becomes 
 
+```bash
 “During Chinese New Year, mandarin oranges are traditionally given in pairs, as giving a single orange is considered bad luck”
+```
 
-This is an implementation of semantic memory.
+The implementation of this semantic memory is also based on a world-view Knowledge Graph, powered by Graphiti and Neo4j.
 
-The next angle we approach agent memory from, are the steps in the entire lifecycle of memory, from creation, to consolidation and de-duplication, storage and finally retrieval.
+## Engineering decisions: Response patterns mimicking human behaviour
 
-Steps:
+Rachel only starts responding after user has stopped typing for a few seconds. If user keeps sending it allows the user continue with interrupting. 
 
-1. Memory creation
-2. Memory consolidation and de-duplication
-3. Memory storage
-4. Memory retrieval
-- Write path: extraction → reconcilation → storing
-- Read path: search → rank → inject
+As mentioned previously, Rachel decides whether the conversation calls for her response, whether directed at Rachel or the whole group and does not respond when not needed.
 
-per user memory, partitioned by user_id so no cross contamination
+Because of the latency of LLM-requests, managing race conditions is slightly more tricky, since new messages from users could appear mid-generation. As such, greater emphasis was needed in re-ordering of messages in the in-memory buffers. To solve this, messages were re-sorted in real-time, and a `responded_to` watermark was added, which marks which messages it has responded to, and partitions them in message history to prevent duplicate replies. 
 
-A world view knowledge graph
+### Future work
 
-### Response patterns mimicking human behaviour
+This is only the beginning for Rachel! Here are some of the features I’ve identified and actively working on for Rachel:
 
-- Only starts responding when user has stopped typing for a few seconds. If user keeps typing it lets the user continue, it just reads everything
-- Decides if the conversation calls for her response, is directed at Rachel or the whole group. Does not respond if not needed.
-- Thinks, fetches relevant context and memory before responding (see above for details)
-- Marks which messages it has responded to and partitions them in message history to prevent duplicate replies
-- Takes turns to respond to messages in batches. If new messages come in the middle of thinking, it doesnt cancel, it waits to reply to them in the next batch
+- Evaluation and improvement of the quality Rachel’s memories retrieved from Graphiti
+- Re-ranking based on a custom forgetting mechanism for memories and episodes
+- Giving Rachel the ability to reach out, by scheduling cron jobs on its own
+- Expanding on the agent loop
+- Giving Rachel audio capabilities
+- Observability: Tracing and evaluation of traces to find gaps
+- Turning Rachel into an actual secretary/assistant via telegram’s secretary mode for bots
 
-Alot of things that are on the roadmap: stay tuned
+Thank you to the [Zep](https://www.getzep.com/) team for making maintaining [Graphiti](https://github.com/getzep/graphiti) and keeping it open sourced!  
 
-- Rachel process images
-- Rachel open links and URLs with headless browser
-- Rachel generate audio
-- Scratch pad or reminders for each group
-- Ability to proactively message → cron jobs
-- Observability: recording traces
-- Add agent loop for multi step tool-calling
-- Experiment with having many agent personalities talk to one another in a simulated environment
-- Turning this into actual personal assistant using secretary mode on telegram bot
-- Load custom skills→ whole can of worms
-- Load custom MCP servers → Whole can of worms
-- Fallback models in case one model goes down + retries
-- Human in the loop → generally not needed unless given Bash tool
+Check Rachel out [here](https://github.com/GeneralR3d/Rachel)
+
+Talk to her [here](https://t.me/Rachel_SG_bot)
 
 1. Y. Bai, T. Huang, K. Sun, and Y. Chen, “Scaling Law in LLM Simulated Personality: More Detailed and Realistic Persona Profile Is All You Need,” arXiv.org, 2025, doi: 10.21203/rs.3.rs-7777787/v1.
