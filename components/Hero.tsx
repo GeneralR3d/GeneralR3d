@@ -98,7 +98,7 @@ export function Hero() {
           className="pointer-events-none relative z-10 flex w-full max-w-3xl flex-col items-center px-6 pt-8 text-center"
         >
           <p className="font-pixel text-xl tracking-widest text-(--accent) md:text-2xl">
-            &gt; full_stack_software_engineer
+            &gt; full_stack_ai_engineer
           </p>
 
           <div className="mt-6">

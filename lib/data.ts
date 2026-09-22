@@ -2,6 +2,8 @@ export const socialLinks = {
   github: "https://github.com/GeneralR3d",
   linkedin: "https://linkedin.com/in/ding-ren-tuan",
   substack: "https://substack.com/@generalred",
+  medium: "https://medium.com/@tdrdingren",
+  x: "https://x.com/ding_ren",
   email: "tdrdingren@gmail.com",
 };
 
@@ -100,7 +102,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     name: "Rachel",
-    description: "Self-evolving Telegram chatbot Rachel responses based on her mood, forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Sometimes she will choose to dao (ignore) you!",
+    description: "Self-evolving AI agent Rachel responses based on her mood, forms memories and evolving impressions of every person, even across chats, and constantly updates her world view. Sometimes she will choose to dao (ignore) you!",
     image: '/images/rachelpfp.jpeg',
     link: "https://github.com/GeneralR3d/Rachel",
   },

@@ -1,4 +1,4 @@
-import { SiGithub, SiSubstack } from "react-icons/si";
+import { SiGithub, SiMedium, SiSubstack, SiX } from "react-icons/si";
 import { FaLinkedin } from "react-icons/fa6";
 import { socialLinks } from "@/lib/data";
 import { GmailPill } from "./GmailPill";
@@ -7,6 +7,8 @@ const iconLinks = [
   { label: "GitHub", href: socialLinks.github, Icon: SiGithub },
   { label: "LinkedIn", href: socialLinks.linkedin, Icon: FaLinkedin },
   { label: "Substack", href: socialLinks.substack, Icon: SiSubstack },
+  { label: "Medium", href: socialLinks.medium, Icon: SiMedium },
+  { label: "X", href: socialLinks.x, Icon: SiX },
 ];
 
 export function Footer() {
