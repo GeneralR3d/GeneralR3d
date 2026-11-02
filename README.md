@@ -59,7 +59,7 @@ Building with AI every day — particularly fascinated about AI memories and per
 
 ### At a Glance
 
-<img src="https://github-readme-stats-sigma-five.vercel.app/api?username=GeneralR3d&show_icons=true&theme=github_dark&hide_border=true&border_radius=10&count_private=true&icon_color=58A6FF&title_color=58A6FF&include_all_commits=true&rank_icon=percentile" width="100%"/>
+<img src="koi/koi.gif" width="256" alt="My koi" />
 
 <br/>
 
